@@ -1,0 +1,182 @@
+:root {
+    --primary-color: #1DBEB4;
+    --color2: #545776;
+    --color4: #7F7F7F;
+ }
+
+ .patient-list-container {
+   width: 100%; /* Aumenta el ancho del formulario */
+   margin: 10px auto;
+   padding: 20px;
+   background-color: white;
+   border-radius: 10px;
+   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+   overflow-y: auto;
+
+  }
+
+.patient-list-container button {
+  cursor: pointer; /* Agrega esta línea para cambiar el cursor a una manito */
+   display: inline-block; /* Asegura que los botones se muestren en línea */
+    vertical-align: middle;
+}
+
+
+.patient-list-container button img {
+  width: 20px;
+  height: 20px;
+}
+
+.patient-list-container button:nth-child(2) {
+  margin-left: 5px; /* Ajusta el espacio entre los botones si es necesario */
+}
+
+.patient-list-container button:nth-child(3) {
+  margin-left: 5px; /* Ajusta el espacio entre los botones si es necesario */
+}
+
+ .create-patient-button {
+   background-color: var(--color2); /* Usa color4 para el fondo del botón */
+   color: white;
+   border: none;
+   padding: 10px 15px;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 16px; /* Aumenta el tamaño del texto del botón */
+   border-radius: 5px;
+   cursor: pointer;
+   transition: background-color 0.3s;
+   margin-top: 10px;
+ }
+
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  /*margin-top: fixed; */
+}
+
+th, td {
+  border: 1px solid #ddd;
+   padding: 8px;
+   text-align: center;
+}
+
+th {
+  background-color: var(--color2);
+  color: white;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--color2);
+}
+
+.create-patient-button:hover {
+  background-color: #7F7F7F;
+}
+
+/* modal.css */
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.modal button {
+  background-color: #1dbeb4;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.modal button.close-button {
+  float: right;
+}
+.custom-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Agrega otras propiedades de estilo según tus necesidades */
+}
+
+.custom-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Agrega otras propiedades de estilo según tus necesidades */
+}
+
+/* Agrega estilos para centrar los botones y establecer el color de fondo de los iconos */
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px; /* Ajusta el margen según sea necesario */
+}
+
+.pagination-buttons button {
+  background-color: #1dbeb4; /* Establece el color de fondo */
+  border: none;
+  margin: 0 5px; /* Ajusta el margen según sea necesario */
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination-buttons span {
+  margin: 0 10px; /* Ajusta el margen según sea necesario */
+}
+
+.pagination-buttons button:disabled {
+  background-color: #7f7f7f; /* Color cuando está desactivado */
+  cursor: not-allowed; /* Cambia el cursor cuando está desactivado */
+}
+
+.search-bar {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.search-bar button {
+  background-color: var(--color2);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-bar button:hover {
+  background-color: #7f7f7f;
+}

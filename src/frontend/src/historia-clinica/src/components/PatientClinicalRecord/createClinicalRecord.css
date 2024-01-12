@@ -1,0 +1,199 @@
+/* createClinicalRecord.css */
+:root {
+    --primary-color: #1DBEB4;
+    --color2: #545776;
+    --color4: #7F7F7F;
+ }
+
+
+.clinical-record-container {
+   display: flex;
+    width: 90%;
+    margin: 10px auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    display:flex;
+    flex-direction: row;
+}
+
+/* Estilos para el contenedor izquierdo */
+.left-container {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Estilos para el contenedor derecho (formulario) */
+.right-container {
+  flex: 1;
+    padding: 20px;
+    border-left: 1px solid #ddd; /* Añade un borde izquierdo entre las secciones */
+    box-sizing: border-box; /* Asegura que el borde no aumente el ancho total */
+    display: flex;
+    flex-direction: column;
+}
+.error-message {
+  color: red;
+  font-size: 20px;
+  margin-top: 5px;
+}
+
+.form-title {
+  font-size: 24px;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.clinical-record-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  margin-bottom: 10px;
+}
+.form-section-textarea {
+  flex: 1; /* Ocupa el espacio restante */
+  width: calc(100% - 16px);
+  padding: 8px;
+  margin-top: 4px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+}
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-section-title::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: #ccc; /* Cambia el color según tu preferencia */
+  margin-top: 5px;
+}
+
+.form-section-title {
+  font-size: 20px;
+  color: var(--color2);
+  cursor: pointer;
+  margin-top: 20px;
+}
+.form-section-textarea {
+  width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+ }
+
+.form-submit-button {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.form-submit-button:hover {
+  background-color: #0d8b80;
+}
+.form-section {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 20px;
+}
+
+.form-section label {
+  flex: 0 0 40%; /* Ajusta el porcentaje según tus necesidades */
+  margin-right: 4%; /* Agrega un espacio entre los campos */
+}
+
+.form-section input,
+.form-section select {
+  flex: ; /* Ocupa el espacio restante */
+}
+
+/* Agrega estos estilos para ocultar inicialmente los botones */
+/* Puedes agregar estos estilos a tu archivo createClinicalRecord.css */
+
+.form-add-button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: var(--color2);
+  color: #fff; /* Color de texto blanco */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.form-add-button:hover {
+  background-color: var(--primary-color) ; /* Cambia el color de fondo al pasar el ratón sobre el botón */
+}
+
+/* Agrega estos estilos para ocultar inicialmente los botones */
+.form-add-button {
+  display: none;
+}
+
+.show-buttons .form-add-button {
+  display: block;
+}
+
+.hide-buttons {
+  display: none;
+}
+
+.show-buttons {
+  display: block; /* o inline-block según sea necesario */
+}
+
+/* En tu archivo CSS */
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
+.form-section-container {
+  position: relative;
+}
+
+.error-message {
+  color: red;
+  /* Agrega cualquier otro estilo que desees */
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold; /* Esto pone el texto en negrita, puedes ajustarlo según tus preferencias */
+}
+

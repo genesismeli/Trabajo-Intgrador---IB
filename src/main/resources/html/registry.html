@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <script src="C:\Users\genes\Downloads\api-rest-dental-clinic-DH-main\api-rest-dental-clinic-DH-main\src\main\resources\js\registry.js"></script>
+
+</head>
+<body>
+<div id="registration-container">
+    <h1>Registration</h1>
+    <form id="registration-form" action="/auth/new" method="POST">
+        <!-- Campo para el nombre -->
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <!-- Campo para el nombre de usuario -->
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <!-- Campo para el correo electrónico -->
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <!-- Campo para la contraseña -->
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <!-- Rol (puede ser un campo select o checkbox) -->
+        <div class="form-group">
+            <label for="roles">Select Role:</label>
+            <select id="roles" name="roles">
+                <option value="USER">User</option>
+                <option value="ADMIN">Admin</option>
+            </select>
+        </div>
+        <!-- Botón de registro -->
+        <button type="submit">Register</button>
+    </form>
+</div>
+</body>
+</html>

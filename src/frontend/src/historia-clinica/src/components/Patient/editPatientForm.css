@@ -1,0 +1,80 @@
+/* editPatientForm.css */
+
+:root {
+  --primary-color: #1DBEB4;
+  --color2: #545776;
+  --color4: #7F7F7F;
+
+}
+
+.edit-patient-form-container {
+  width: 800px;
+  margin: 80px auto;
+  padding: 10px;
+  background-color: var(--color2);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 4.9);
+  overflow-y: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column; /* Cambiado a 'column' */
+}
+
+.edit-patient-form-container .form-field {
+  width: 48%; /* Ajusta el ancho según sea necesario */
+    box-sizing: border-box;
+    display: inline-block; /* Permite que los form-row se muestren en línea uno al lado del otro */
+    vertical-align: top; /* Alinea la parte superior de los form-row */
+    margin-right: 2%;
+}
+
+.edit-patient-form-container label {
+  width: 30%;
+  margin-right: 20px; /* Agregado para espacio entre la etiqueta y el campo de entrada */
+  color: white;
+  font-size: 18px;
+}
+
+#sesion {
+  text-align: center;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.edit-patient-form-container button {
+  background-color: #7F7F7F;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 23px;
+  transition: background-color 0.3s;
+}
+
+.edit-patient-form-container button:hover {
+  background-color: var(--primary-color);
+}
+
+.edit-patient-form-container input[type="text"],
+.edit-patient-form-container input[type="email"],
+.edit-patient-form-container input[type="date"],
+.edit-patient-form-container input[type="number"],
+.edit-patient-form-container input[type="tel"],
+.edit-patient-form-container select {
+  width: 48%;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  border: 1px solid var(--color4);
+  border-radius: 9px;
+}
+
+.error-message {
+  color: white; /* Color para mensajes de error */
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+

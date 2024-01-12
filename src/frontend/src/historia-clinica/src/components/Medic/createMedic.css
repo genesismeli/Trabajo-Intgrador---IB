@@ -1,0 +1,69 @@
+.create-medic-container {
+  width: 900px;
+  margin: 80px auto;
+  padding: 10px;
+  background-color: var(--color2);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  text-align: center;
+}
+
+.create-medic-container .form-row {
+  width: 48%; /* Ajusta el ancho según sea necesario */
+  box-sizing: border-box;
+  display: inline-block; /* Permite que los form-row se muestren en línea uno al lado del otro */
+  vertical-align: top; /* Alinea la parte superior de los form-row */
+  margin-right: 2%; /* Ajusta el espacio entre los form-row */
+}
+
+.create-medic-container .form-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.create-medic-container label {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.create-medic-container input[type="text"],
+.create-medic-container input[type="email"],
+ .create-medic-container input[type="password"]{
+  width: calc(100% - 20px); /* Ajusta el ancho del campo de entrada */
+  padding: 8px; /* Ajusta el espacio interno del campo de entrada */
+  margin-top: 5px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.create-medic-container h2 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.create-medic-container button {
+  background-color: var(--color4);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 23px;
+  transition: background-color 0.3s;
+}
+
+.create-medic-container button:hover {
+  background-color: var(--primary-color);
+}
+
+.error-message {
+  color: white;
+  font-size: 16px;
+  margin-top: 5px;
+}

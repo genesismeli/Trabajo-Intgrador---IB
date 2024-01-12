@@ -1,0 +1,72 @@
+:root {
+    --primary-color: #1DBEB4;
+    --color2: #545776;
+    --color4: #7F7F7F;
+ }
+
+
+
+ body {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
+   margin: 0;
+   background-color: white;
+ }
+
+ .login-container {
+   width: 400px; /* Aumenta el ancho del formulario */
+   margin: 300px auto;
+   padding: 30px;
+   background-color: #545776 ;
+   border-radius: 30px;
+   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+ }
+
+ .form-group {
+   margin-bottom: 20px;
+ }
+
+ .form-group label {
+   display: block;
+   margin-bottom: 10px;
+   color: white; /* Cambia el color del texto de la etiqueta */
+   font-size: 18px;
+ }
+
+ .form-group input[type="text"],
+ .form-group input[type="password"] {
+   width: 100%;
+   font-size: 18px;
+   padding: 10px;
+   border-radius: 10px;
+   background-color: white; /* Hace el campo de entrada semi-transparente */
+   border: 2px solid black;
+   color: black; /* Cambia el color del texto del campo de entrada */
+ }
+
+
+#sesion {
+  text-align: center;
+  margin-bottom: 20px;
+  color: white;
+}
+
+ .session-button {
+   background-color: #7F7F7F; /* Usa color4 para el fondo del botón */
+   color: white;
+   border: none;
+   padding: 15px 20px;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 20px; /* Aumenta el tamaño del texto del botón */
+   border-radius: 5px;
+   cursor: pointer;
+   transition: background-color 0.3s;
+ }
+
+ .session-button:hover {
+   background-color: #1DBEB4; /* Cambia el color del botón al pasar el mouse */
+ }
