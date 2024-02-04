@@ -41,8 +41,10 @@ public class PatientController {
         return ResponseEntity.ok(patientsPage);
     }
 
-
-    @Operation(summary = "Find patient by id")
+    @Operation(summary = "Find patient by id",
+            parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+            security = @SecurityRequirement(name = "jwtAuth"))
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getPatient(@PathVariable Long id) {
         PatientDTO patientDTO = ipatientService.findPatientById(id);

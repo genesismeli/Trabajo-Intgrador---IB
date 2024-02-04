@@ -24,21 +24,13 @@ class CreateClinicalRecord extends Component {
         showNotes: false,
         showAnamnesis: false,
         showReason: false,
-        physicalExams: [
-          {
-
-          },
-        ],
-        medications: [
-          {
-
-          },
-        ],
-        diagnoses: [
-          {
-
-          },
-        ],
+        showPersonalHistory: false,
+        showFamilyHistory: false,
+        personalHistorys: [{},],
+        familyHistorys: [{},],
+        physicalExams: [{},],
+        medications: [{},],
+        diagnoses: [{},],
         isModalOpen: false,
       };
 
@@ -70,7 +62,12 @@ class CreateClinicalRecord extends Component {
               .catch((error) => console.error('Error al obtener las opciones de vamedecum:', error));
 
   // Realiza una solicitud al backend para obtener la información completa del paciente
-      fetch(`http://localhost:8081/patient/${patientId}`)
+  const token = localStorage.getItem('token');
+      fetch(`http://localhost:8081/patient/${patientId}`, {
+          headers: {
+           Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
+           },
+      })
         .then((response) => response.json())
         .then((patientData) => {
           this.setState({ patient: patientData });
@@ -150,6 +147,33 @@ handleAddDiagnosis = () => {
   }
 };
 
+handlePersonalHistoryChange = (event) => {
+  const { name, type, checked, value } = event.target;
+
+  this.setState((prevState) => {
+    const updatedPersonalHistorys = [...prevState.personalHistorys];
+    // Actualiza el objeto vacío en la primera posición del array
+    updatedPersonalHistorys[0] = {
+      ...updatedPersonalHistorys[0],
+      [name]: type === 'checkbox' ? checked : value,
+    };
+    return { personalHistorys: updatedPersonalHistorys };
+  });
+};
+
+handleFamilyHistoryChange = (event) => {
+  const { name, type, checked, value } = event.target;
+
+  this.setState((prevState) => {
+    const updatedFamilyHistorys = [...prevState.familyHistorys];
+    // Actualiza el objeto vacío en la primera posición del array
+    updatedFamilyHistorys[0] = {
+      ...updatedFamilyHistorys[0],
+      [name]: type === 'checkbox' ? checked : value,
+    };
+    return { familyHistorys: updatedFamilyHistorys };
+  });
+};
 
 handlePhysicalExamsChange = (event, index) => {
   const { name, value } = event.target;
@@ -204,15 +228,15 @@ getVademecumObject = (id) => {
 
   handleCreateClinicalRecord = (event) => {
     event.preventDefault();
-
+    const token = localStorage.getItem('token');
     // Recopila los datos del estado
-    const { date, patient, notes, reason, anamnesis, physicalExams, medications, diagnoses,showPhysicalExams, showMedications, showDiagnoses, showAnamnesis, showReason, showNotes } = this.state;
+    const { date, patient, notes, reason, anamnesis, physicalExams, medications, diagnoses, personalHistorys, familyHistorys, showPersonalHistory, showFamilyHistory, showPhysicalExams, showMedications, showDiagnoses, showAnamnesis, showReason, showNotes } = this.state;
     if (!date) {
         // Puedes establecer la fecha actual aquí si es necesario
         this.setState({ date: new Date() });
         return;
     }
-    const isAnySectionFilled = [notes, anamnesis, reason, physicalExams, medications, diagnoses].some(section => {
+    const isAnySectionFilled = [notes, anamnesis, reason, physicalExams, personalHistorys, familyHistorys, medications, diagnoses].some(section => {
         if (Array.isArray(section)) {
           return section.some(entry => Object.values(entry).some(value => value !== ''));
         } else {
@@ -225,7 +249,7 @@ getVademecumObject = (id) => {
         return;
       }
     // Validación: Verifica si todas las secciones están vacías
-      if (!date && !physicalExams.length && !medications.length && !diagnoses.length && !anamnesis.length && !notes.length && !reason.length) {
+      if (!date && !physicalExams.length && !medications.length && !diagnoses.length && !anamnesis.length && !notes.length && !reason.length && !personalHistorys.length && !familyHistorys.length ) {
         this.setState({ showMessage: true });
         return;
       }
@@ -244,6 +268,10 @@ getVademecumObject = (id) => {
         activeSectionData ={ anamnesis };
       } else if (showReason) {
         activeSectionData ={ reason };
+      }else if (showPersonalHistory) {
+        activeSectionData ={ personalHistorys };
+      }else if (showFamilyHistory) {
+        activeSectionData ={ familyHistorys };
       }
 
       // Valida la sección activa
@@ -255,7 +283,7 @@ getVademecumObject = (id) => {
 
     // Elimina las secciones que están completamente vacías
       const nonEmptySections = Object.fromEntries(
-        Object.entries({ physicalExams, medications, diagnoses, notes, anamnesis, reason }).filter(([key, value]) => {
+        Object.entries({ physicalExams, medications, diagnoses, notes, anamnesis, reason, personalHistorys, familyHistorys }).filter(([key, value]) => {
           if (Array.isArray(value)) {
             // Filtra los elementos null en la matriz
             const filteredArray = value.filter(item => item !== null);
@@ -275,6 +303,8 @@ getVademecumObject = (id) => {
       nonEmptySections.showAnamnesis = showAnamnesis;
       nonEmptySections.showNotes = showNotes;
       nonEmptySections.showReason = showReason;
+      nonEmptySections.showPersonalHistory = showPersonalHistory;
+      nonEmptySections.showFamilyHistory = showFamilyHistory;
 
       // Construye el objeto con la información de la ficha clínica
       const clinicalRecordData = {
@@ -291,6 +321,7 @@ getVademecumObject = (id) => {
             })),
         medications: medications.map(medication => ({
             vademecum: this.getVademecumObject(medication.vademecum),
+            notes: medication.notes,
         }))
 
       };
@@ -301,6 +332,7 @@ getVademecumObject = (id) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(clinicalRecordData),
     })
@@ -335,7 +367,7 @@ getVademecumObject = (id) => {
     const birthdate = new Date(rawBirthdate);
     const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
     return birthdate.toLocaleDateString(undefined, options);
-  }
+  };
 
 
   handleToggleFields = (field) => {
@@ -347,7 +379,7 @@ getVademecumObject = (id) => {
         showMessageDiagnosis: false,
     }));
 
-  const otherFields = ['showPhysicalExams', 'showMedications', 'showDiagnoses', 'showAnamnesis', 'showNotes', 'showReason'];
+  const otherFields = ['showPhysicalExams', 'showMedications', 'showDiagnoses', 'showAnamnesis', 'showNotes', 'showReason', 'showPersonalHistory', 'showFamilyHistory'];
     otherFields.forEach((otherField) => {
       if (otherField !== field) {
         this.setState({ [otherField]: false });
@@ -429,6 +461,7 @@ getVademecumObject = (id) => {
               value={exam.glucose}
               onChange={(e) => this.handlePhysicalExamsChange(e, index)}
               className="form-input"
+
             />
           </label>
          </div>
@@ -452,6 +485,16 @@ getVademecumObject = (id) => {
                </option>
              ))}
            </select>
+          </label>
+          <label className="form-label">
+            Notas para el medicamento:
+            <input
+              type="text"
+              name="notes"
+              value={medication.notes}
+              onChange={(e) => this.handleMedicationsChange(e, index)}
+              className="form-input"
+            />
           </label>
           </div>
        </div>
@@ -490,6 +533,572 @@ getVademecumObject = (id) => {
        </div>
      ));
    }
+renderPersonalHistoryFields() {
+  const {
+    diabetes,
+    hypertension,
+    coronaryArteryDisease,
+    bronchialAsthma,
+    bronchopulmonaryDisease,
+    psychopathy,
+    allergies,
+    tuberculosis,
+    sexuallyTransmittedInfection,
+    gout,
+    endocrineDisorders,
+    nephropathies,
+    uropathies,
+    hematopathies,
+    ulcer,
+    hepatitis,
+    fever,
+    otherMedicalHistory,
+    cancer
+  } =  this.state.personalHistorys[0];
+
+  return (
+       <div key={0}>
+      <h3 className="form-section-title">Antecedentes Personales</h3>
+      {/* Campos del historial personal */}
+      <div className="form-section">
+        <label className="form-label">
+          Diabetes:
+          <input
+            type="checkbox"
+            name="diabetes"
+            checked={diabetes}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Hipertensión:
+          <input
+            type="checkbox"
+            name="hypertension"
+            checked={hypertension}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Enfermedades Coronarias:
+          <input
+            type="checkbox"
+            name="coronaryArteryDisease"
+            checked={coronaryArteryDisease}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Asma:
+          <input
+            type="checkbox"
+            name="bronchialAsthma"
+            checked={bronchialAsthma}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+         <label className="form-label">
+           Enfermedad BroncoPulmonar:
+           <input
+             type="checkbox"
+             name="bronchopulmonaryDisease"
+             checked={bronchopulmonaryDisease}
+             onChange={(e) => this.handlePersonalHistoryChange(e)}
+             className="form-input"
+           />
+         </label>
+        <label className="form-label">
+          Enf. Psiquiátricas:
+          <input
+            type="checkbox"
+            name="psychopathy"
+            checked={psychopathy}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Tuberculosis:
+          <input
+            type="checkbox"
+            name="tuberculosis"
+            checked={tuberculosis}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          E.T.S:
+          <input
+            type="checkbox"
+            name="sexuallyTransmittedInfection"
+            checked={sexuallyTransmittedInfection}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Alergias:
+          <input
+            type="text"
+            name="allergies"
+            value={allergies}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Gota:
+          <input
+            type="checkbox"
+            name="gout"
+            checked={gout}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Endocrinopatías:
+          <input
+            type="checkbox"
+            name="endocrineDisorders"
+            checked={endocrineDisorders}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Nefropatías:
+          <input
+            type="checkbox"
+            name="nephropathies"
+            checked={nephropathies}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Urolopatías:
+          <input
+            type="checkbox"
+            name="uropathies"
+            checked={uropathies}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Hematopatías:
+          <input
+            type="checkbox"
+            name="hematopathies"
+            checked={hematopathies}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+         <label className="form-label">
+           Úlceras:
+           <input
+             type="checkbox"
+             name="ulcer"
+             checked={ulcer}
+             onChange={(e) => this.handlePersonalHistoryChange(e)}
+             className="form-input"
+           />
+         </label>
+        <label className="form-label">
+          Hepatitis:
+          <input
+            type="checkbox"
+            name="hepatitis"
+            checked={hepatitis}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Fiebre:
+          <input
+            type="checkbox"
+            name="fever"
+            checked={fever}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Otros antecedentes médicos:
+          <textarea
+            name="otherMedicalHistory"
+            value={otherMedicalHistory}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input-textarea"
+          />
+        </label>
+        <label className="form-label">
+          Cáncer:
+          <input
+            type="text"
+            name="cancer"
+            value={cancer}
+            onChange={(e) => this.handlePersonalHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+      </div>
+    </div>
+  )
+}
+
+renderFamilyHistoryFields() {
+  const {
+    coronaryArteryDisease,
+    myocardialInfarction,
+    hypertension,
+    asthma,
+    copd,
+    tuberculosis,
+    diabetes,
+    obesity,
+    metabolicSyndrome,
+    anemia,
+    hemophilia,
+    stroke,
+    alzheimer,
+    multipleSclerosis,
+    hemochromatosis,
+    cysticFibrosis,
+    depression,
+    schizophrenia,
+    rheumatoidArthritis,
+    lupus,
+    celiacDisease,
+    chronicKidneyDisease,
+    diabeticNephropathy,
+    breastCancer,
+    colonCancer,
+    lungCancer,
+    inflammatoryBowelDisease,
+    hypothyroidism,
+    otherMedicalHistory,
+
+  } =  this.state.familyHistorys[0];
+
+  return (
+      <div key={0}>
+      <h3 className="form-section-title">Antecedentes Familiares</h3>
+      {/* Campos del historial personal */}
+      <div className="form-section">
+        <label className="form-label">
+          Diabetes:
+          <input
+            type="checkbox"
+            name="coronaryArteryDisease"
+            checked={coronaryArteryDisease}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Infarto de miocardio:
+          <input
+            type="checkbox"
+            name="myocardialInfarction"
+            checked={myocardialInfarction}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+         <label className="form-label">
+           Hipertensión:
+           <input
+             type="checkbox"
+             name="hypertension"
+             checked={hypertension}
+             onChange={(e) => this.handleFamilyHistoryChange(e)}
+             className="form-input"
+           />
+         </label>
+        <label className="form-label">
+          Asma:
+          <input
+            type="checkbox"
+            name="asthma"
+            checked={asthma}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          EPOC:
+          <input
+            type="checkbox"
+            name="copd"
+            checked={copd}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Tuberculosis:
+          <input
+            type="checkbox"
+            name="tuberculosis"
+            checked={tuberculosis}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Diabetes:
+          <input
+            type="checkbox"
+            name="diabetes"
+            checked={diabetes}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Obesidad:
+          <input
+            type="checkbox"
+            name="obesity"
+            checked={obesity}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Síndrome Metabólico:
+          <input
+            type="checkbox"
+            name="metabolicSyndrome"
+            checked={metabolicSyndrome}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Anemia:
+          <input
+            type="checkbox"
+            name="anemia"
+            checked={anemia}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Hemofilia:
+          <input
+            type="checkbox"
+            name="hemophilia"
+            checked={hemophilia}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          ACV:
+          <input
+            type="checkbox"
+            name="stroke"
+            checked={stroke}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Enf. de Alzheimer:
+          <input
+            type="checkbox"
+            name="alzheimer"
+            checked={alzheimer}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Esclerosis Múltiple:
+          <input
+            type="checkbox"
+            name="multipleSclerosis"
+            checked={multipleSclerosis}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Hematocromatosis:
+          <input
+            type="checkbox"
+            name="hemochromatosis"
+            checked={hemochromatosis}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Fibrosis Quística:
+          <input
+            type="checkbox"
+            name="cysticFibrosis"
+            checked={cysticFibrosis}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Depresión:
+          <input
+            type="checkbox"
+            name="depression"
+            checked={depression}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Esquizofrenia:
+          <input
+            type="checkbox"
+            name="schizophrenia"
+            checked={schizophrenia}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Artritis Reumatoide:
+          <input
+            type="checkbox"
+            name="rheumatoidArthritis"
+            checked={rheumatoidArthritis}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Lupus:
+          <input
+            type="checkbox"
+            name="lupus"
+            checked={lupus}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Lupus:
+          <input
+            type="checkbox"
+            name="lupus"
+            checked={lupus}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Enf. Celíaca:
+          <input
+            type="checkbox"
+            name="celiacDisease"
+            checked={celiacDisease}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Enf Renal:
+          <input
+            type="checkbox"
+            name="chronicKidneyDisease"
+            checked={chronicKidneyDisease}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Nefropatía Diabética:
+          <input
+            type="checkbox"
+            name="diabeticNephropathy"
+            checked={diabeticNephropathy}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Cáncer de mama:
+          <input
+            type="checkbox"
+            name="breastCancer"
+            checked={breastCancer}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Cáncer de colon:
+          <input
+            type="checkbox"
+            name="colonCancer"
+            checked={colonCancer}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Cáncer de pulmón:
+          <input
+            type="checkbox"
+            name="lungCancer"
+            checked={lungCancer}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Enfermedad Intestinal:
+          <input
+            type="checkbox"
+            name="inflammatoryBowelDisease"
+            checked={inflammatoryBowelDisease}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+        <label className="form-label">
+          Hipotiroidismo:
+          <input
+            type="checkbox"
+            name="hypothyroidism"
+            checked={hypothyroidism}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input"
+          />
+        </label>
+       <label className="form-label">
+          Otros antecedentes médicos:
+          <textarea
+            name="otherMedicalHistory"
+            value={otherMedicalHistory}
+            onChange={(e) => this.handleFamilyHistoryChange(e)}
+            className="form-input-textarea"
+          />
+        </label>
+
+      </div>
+    </div>
+  )
+}
+
 
    render() {
      return (
@@ -600,6 +1209,22 @@ getVademecumObject = (id) => {
            </label>
          </div>
        )}
+            <h3
+               className="form-section-title"
+               onClick={() => this.handleToggleFields('showPersonalHistory')}
+             >
+               Antecedentes Personales
+               {this.state.showPersonalHistory ? ' ▼' : ' ▶'}
+             </h3>
+             {this.state.showPersonalHistory && this.renderPersonalHistoryFields()}
+            <h3
+               className="form-section-title"
+               onClick={() => this.handleToggleFields('showFamilyHistory')}
+             >
+               Antecedentes Familiares
+               {this.state.showFamilyHistory ? ' ▼' : ' ▶'}
+             </h3>
+             {this.state.showFamilyHistory && this.renderFamilyHistoryFields()}
 
            <h3
              className="form-section-title"
@@ -654,5 +1279,6 @@ getVademecumObject = (id) => {
      );
    }
  }
+
 
  export default CreateClinicalRecord;

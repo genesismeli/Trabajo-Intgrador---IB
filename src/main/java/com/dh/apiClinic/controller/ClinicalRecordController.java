@@ -39,6 +39,8 @@ public class ClinicalRecordController {
     IPhysicalExamService physicalExamService;
 
     @Autowired
+    IPersonalHistoryService personalHistoryService;
+    @Autowired
     IPatientService patientService;
 
     @Autowired
@@ -48,7 +50,10 @@ public class ClinicalRecordController {
     }
 
 
-    @Operation(summary = "Add clinicalRecord")
+    @Operation(summary = "Add clinicalRecord",
+            parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+            security = @SecurityRequirement(name = "jwtAuth"))
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<ClinicalRecordDTO>> addClinicalRecord(@RequestBody ClinicalRecordDTO clinicalRecordDTO) {
         iclinicalRecordService.saveClinicalRecord(clinicalRecordDTO);
@@ -68,7 +73,10 @@ public class ClinicalRecordController {
         }
 
 
-        @Operation(summary = "Find clinical Record by id")
+        @Operation(summary = "Find clinical Record by id",
+                parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+                security = @SecurityRequirement(name = "jwtAuth"))
+        @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
         @GetMapping("/{id}")
         public ResponseEntity<?> getClinicalRecord(@PathVariable Long id) {
             ClinicalRecordDTO clinicalRecordDTO = iclinicalRecordService.findClinicalRecordById(id);
@@ -131,7 +139,11 @@ public class ClinicalRecordController {
 
             return response;
         }
-
+    @Operation(summary = "Consultar por paciente a existing clinical Record",
+            parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+            security = @SecurityRequirement(name = "jwtAuth")
+    )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('USER') ")
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<PageDTO<ClinicalRecordDTO>> getClinicalRecordsByPatientId(
             @PathVariable Long patientId,

@@ -24,11 +24,18 @@ const ClinicalRecordList = () => {
   const [patientData, setPatientData] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
+
   const { patientId } = useParams();
 
   useEffect(() => {
+   const token = localStorage.getItem('token');
     // Llamada a la API para obtener las fichas clínicas del paciente
-    fetch(`http://localhost:8081/clinical/patient/${patientId}?page=${currentPage}`)
+   fetch(`http://localhost:8081/clinical/patient/${patientId}?page=${currentPage}`, {
+     headers: {
+       Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
+     },
+   })
+
       .then((response) => response.json())
       .then((data) => {
         setClinicalRecords(data.content);
@@ -39,7 +46,12 @@ const ClinicalRecordList = () => {
       });
 
     // Llamada a la API para obtener los datos del paciente
-    fetch(`http://localhost:8081/patient/${patientId}`)
+
+    fetch(`http://localhost:8081/patient/${patientId}`,  {
+         headers: {
+         Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
+         },
+    })
       .then((response) => response.json())
       .then((data) => {
         setPatientData(data);
@@ -81,6 +93,7 @@ const ClinicalRecordList = () => {
       })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         setSelectedRecord(data); // Almacena la ficha clínica seleccionada
         setIsModalOpen(true); // Abre el modal
       })
@@ -375,8 +388,6 @@ const downloadClinicalRecord = (recordId) => {
                 </tr>
               </tbody>
             </table>
-
-            {/* Anamnesis */}
             <h4 className="title">Anamnesis</h4>
             <table>
               <thead>
@@ -390,7 +401,488 @@ const downloadClinicalRecord = (recordId) => {
                 </tr>
               </tbody>
             </table>
-              <h4 className="title">Exámenes Físicos</h4>
+            <h4 className="title">Antecedentes Personales</h4>
+            {selectedRecord.personalHistorys && selectedRecord.personalHistorys.length > 0 && (
+            <table>
+              <thead>
+                <tr>
+                  <th>Tipo de Antecedente</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedRecord.personalHistorys && (
+                  <>
+                    <tr>
+                      <td>Psicopatías</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedRecord.personalHistorys[0].psychopathy}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Diabetes</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          defaultChecked={selectedRecord.personalHistorys[0].diabetes}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Enf. Coronarias</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          defaultChecked={selectedRecord.personalHistorys[0].coronaryArteryDisease}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                      <tr>
+                        <td>Asma</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            defaultChecked={selectedRecord.personalHistorys[0].bronchialAsthma}
+                            disabled
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Enf. Pulmonares</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            defaultChecked={selectedRecord.personalHistorys[0].bronchopulmonaryDisease}
+                            disabled
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Tuberculosis</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            defaultChecked={selectedRecord.personalHistorys[0].tuberculosis}
+                            disabled
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Gota</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            defaultChecked={selectedRecord.personalHistorys[0].gout}
+                            disabled
+                          />
+                        </td>
+                      </tr>
+                    <tr>
+                      <td>Infección de Transmisión Sexual</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          defaultChecked={selectedRecord.personalHistorys[0].sexuallyTransmittedInfection}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                     <tr>
+                       <td>Endocrinopatías </td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           defaultChecked={selectedRecord.personalHistorys[0].endocrineDisorders}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                    <tr>
+                       <td>Nefropatías </td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           defaultChecked={selectedRecord.personalHistorys[0].nephropathies}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                    <tr>
+                       <td>Urolopatías </td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           defaultChecked={selectedRecord.personalHistorys[0].uropathies}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                   <tr>
+                       <td>Hematopatologías </td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           defaultChecked={selectedRecord.personalHistorys[0].hematopathies}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+
+                   <tr>
+                       <td>Úlceras </td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           defaultChecked={selectedRecord.personalHistorys[0].ulcer}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                   <tr>
+                       <td>Hepatitis </td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           defaultChecked={selectedRecord.personalHistorys[0].hepatitis}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                    <tr>
+                        <td>Fiebre </td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            defaultChecked={selectedRecord.personalHistorys[0].fever}
+                            disabled
+                          />
+                        </td>
+                      </tr>
+                    <tr>
+                      <td>Alergias</td>
+                      <td>{selectedRecord.personalHistorys[0].allergies}</td>
+                    </tr>
+                    <tr>
+                      <td>Antecedentes Médicos Adicionales</td>
+                      <td>{selectedRecord.personalHistorys[0].otherMedicalHistory}</td>
+                    </tr>
+                    <tr>
+                      <td>Cáncer</td>
+                      <td>{selectedRecord.personalHistorys[0].cancer}</td>
+                    </tr>
+                  </>
+                )}
+              </tbody>
+            </table>
+            )}
+            <h4 className="title">Antecedentes Familiares</h4>
+            {selectedRecord.familyHistorys && selectedRecord.familyHistorys.length > 0 && (
+            <table>
+              <thead>
+                <tr>
+                  <th>Tipo de Antecedente</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedRecord.familyHistorys && (
+                  <>
+                    <tr>
+                      <td>Enf. Coronarias</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedRecord.familyHistorys[0].coronaryArteryDisease}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Infarto de Miocardio</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedRecord.familyHistorys[0].myocardialInfarction}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Hipetensión</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedRecord.familyHistorys[0].hypertension}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Asma</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedRecord.familyHistorys[0].asthma}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>EPOC</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedRecord.familyHistorys[0].copd}
+                          disabled
+                        />
+                      </td>
+                    </tr>
+                     <tr>
+                       <td>Tuberculosis</td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           checked={selectedRecord.familyHistorys[0].tuberculosis}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                     <tr>
+                       <td>Diabetes</td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           checked={selectedRecord.familyHistorys[0].diabetes}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                     <tr>
+                       <td>Obesidad</td>
+                       <td>
+                         <input
+                           type="checkbox"
+                           checked={selectedRecord.familyHistorys[0].obesity}
+                           disabled
+                         />
+                       </td>
+                     </tr>
+                      <tr>
+                        <td>Síndrome Metabólico</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedRecord.familyHistorys[0].metabolicSyndrome}
+                            disabled
+                          />
+                        </td>
+                      </tr>
+                           <tr>
+                             <td>Anemia</td>
+                             <td>
+                               <input
+                                 type="checkbox"
+                                 checked={selectedRecord.familyHistorys[0].anemia}
+                                 disabled
+                               />
+                             </td>
+                           </tr>
+                         <tr>
+                           <td>Hemofilia</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].hemophilia}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>ACV</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].stroke}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Enf. de Alzheimer</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].alzheimer}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                             <tr>
+                               <td>Esclerosis Múltiple</td>
+                               <td>
+                                 <input
+                                   type="checkbox"
+                                   checked={selectedRecord.familyHistorys[0].multipleSclerosis}
+                                   disabled
+                                 />
+                               </td>
+                             </tr>
+                               <tr>
+                                 <td>Hematocromatosis</td>
+                                 <td>
+                                   <input
+                                     type="checkbox"
+                                     checked={selectedRecord.familyHistorys[0].hemochromatosis}
+                                     disabled
+                                   />
+                                 </td>
+                               </tr>
+                         <tr>
+                           <td>Fibrosis Quística</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].cysticFibrosis}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Depresión</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].depression}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Esquizofrenia</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].schizophrenia}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Artritis Reumatoide</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].rheumatoidArthritis}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Lupus</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].lupus}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Enf. Celíaca</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].celiacDisease}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Enf. Renal Crónica</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].chronicKidneyDisease}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Nefrología Diabética</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].diabeticNephropathy}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Cáncer de mama</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].breastCancer}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                         <tr>
+                           <td>Cáncer de colon</td>
+                           <td>
+                             <input
+                               type="checkbox"
+                               checked={selectedRecord.familyHistorys[0].colonCancer}
+                               disabled
+                             />
+                           </td>
+                         </tr>
+                            <tr>
+                              <td>Cáncer de pulmón</td>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRecord.familyHistorys[0].lungCancer}
+                                  disabled
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Enf. Intestinal Inflamatoria</td>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRecord.familyHistorys[0].inflammatoryBowelDisease}
+                                  disabled
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Hipotiroidismo</td>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRecord.familyHistorys[0].hypothyroidism}
+                                  disabled
+                                />
+                              </td>
+                            </tr>
+                    <tr>
+                      <td>Antecedentes Médicos Adicionales</td>
+                      <td>{selectedRecord.familyHistorys[0].otherMedicalHistory}</td>
+                    </tr>
+                  </>
+                )}
+              </tbody>
+            </table>
+            )}
+              <h4 className="title">Signos Vitales</h4>
               <table>
                 <thead>
                   <tr>

@@ -15,6 +15,7 @@ public class MedicationDTO {
 
     private Long id;
     private Vademecum vademecum;
+    private String notes;
 
 
 

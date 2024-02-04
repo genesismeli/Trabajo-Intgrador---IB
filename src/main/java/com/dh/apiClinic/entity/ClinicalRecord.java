@@ -61,6 +61,22 @@ public class ClinicalRecord {
     )
     private List<PhysicalExam> physicalExams;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "clinical_record_personal_history",
+            joinColumns = @JoinColumn(name = "clinical_record_id"),
+            inverseJoinColumns = @JoinColumn(name = "personal_history_id")
+    )
+    private List<PersonalHistory> personalHistorys;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "clinical_record_family_history",
+            joinColumns = @JoinColumn(name = "clinical_record_id"),
+            inverseJoinColumns = @JoinColumn(name = "family_history_id")
+    )
+    private List<FamilyHistory> familyHistorys;
+
     @Column(name= "notes")
     private String notes;
 

@@ -16,6 +16,8 @@ public class ClinicalRecordDTO {
     private String notes;
     private String reason;
     private String anamnesis;
+    private List<PersonalHistoryDTO> personalHistorys;
+    private List<FamilyHistoryDTO> familyHistorys;
 
 }
 

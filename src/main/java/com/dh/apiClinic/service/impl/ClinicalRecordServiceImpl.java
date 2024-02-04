@@ -2,10 +2,7 @@ package com.dh.apiClinic.service.impl;
 
 
 import com.dh.apiClinic.DTO.*;
-import com.dh.apiClinic.entity.ClinicalRecord;
-import com.dh.apiClinic.entity.Diagnosis;
-import com.dh.apiClinic.entity.Medication;
-import com.dh.apiClinic.entity.PhysicalExam;
+import com.dh.apiClinic.entity.*;
 import com.dh.apiClinic.exception.ResourceNotFoundException;
 
 import com.dh.apiClinic.repository.IClinicalRecordRepository;
@@ -40,6 +37,9 @@ public class ClinicalRecordServiceImpl implements IClinicalRecordService {
 
     @Autowired
     private IPhysicalExamService physicalExamService;
+
+    @Autowired
+    private IPersonalHistoryService personalHistoryService;
 
     @Autowired
     private IPatientService patientService;
@@ -141,6 +141,14 @@ public class ClinicalRecordServiceImpl implements IClinicalRecordService {
           diagnosisDTOs.add(diagnosisDTO);
         }
         clinicalRecordDTO.setDiagnoses(diagnosisDTOs);
+
+        // Mapea las PersonalHistory
+        List<PersonalHistoryDTO> personalHistoryDTOs = new ArrayList<>();
+        for (PersonalHistory personalHistory : clinicalRecord.getPersonalHistorys()) {
+            PersonalHistoryDTO personalHistoryDTO = personalHistoryService.convertEntityToDto(personalHistory);
+        personalHistoryDTOs.add(personalHistoryDTO);
+        }
+        clinicalRecordDTO.setPersonalHistorys(personalHistoryDTOs);
 
         return clinicalRecordDTO;
         }
