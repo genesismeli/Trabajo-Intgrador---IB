@@ -32,10 +32,32 @@ class CreateClinicalRecord extends Component {
         medications: [{},],
         diagnoses: [{},],
         isModalOpen: false,
+        anamnesisResponse: '',
       };
 
 
   }
+
+    handleSearchAnamnesis = () => {
+        const token = localStorage.getItem('token');
+        const { anamnesis } = this.state;
+
+        // Realizar la solicitud al backend para buscar en Chat GPT
+        fetch(`http://localhost:8081/ai/obtenerRespuesta?mensaje=${encodeURIComponent(anamnesis)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        })
+          .then(response => response.text())
+          .then(data => {
+            this.setState({ anamnesisResponse: data });
+          })
+          .catch(error => {
+            console.error('Error al buscar en Chat GPT:', error);
+          });
+      };
 
   componentDidMount() {
       // Obtén el ID del paciente de la URL o de donde sea que lo hayas pasado
@@ -533,7 +555,7 @@ getVademecumObject = (id) => {
        </div>
      ));
    }
-renderPersonalHistoryFields() {
+ renderPersonalHistoryFields() {
   const {
     diabetes,
     hypertension,
@@ -1207,6 +1229,12 @@ renderFamilyHistoryFields() {
                className="form-input"
              />
            </label>
+       <button type="button" className="form-submit-button" onClick={this.handleSearchAnamnesis}>Buscar en Chat GPT</button>
+    {this.state.anamnesisResponse && (
+      <div className="respuesta-chat-gpt">
+        Respuesta de Chat GPT: {this.state.anamnesisResponse}
+      </div>
+    )}
          </div>
        )}
             <h3
@@ -1279,6 +1307,4 @@ renderFamilyHistoryFields() {
      );
    }
  }
-
-
  export default CreateClinicalRecord;

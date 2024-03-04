@@ -1,0 +1,182 @@
+@startuml
+
+class ClinicalRecord {
+    + id: Long
+    + date: Date
+    + notes: String
+    + reason: String
+    + anamnesis: String
+    + gptSearchQuery: String
+    --
+    + patient: Patient
+    + medications: List<Medication>
+    + diagnoses: List<Diagnosis>
+    + physicalExams: List<PhysicalExam>
+    + personalHistorys: List<PersonalHistory>
+    + familyHistorys: List<FamilyHistory>
+}
+
+class Medic {
+    + id: Long
+    + name: String
+    + lastName: String
+    + registrationNumber: String
+    + speciality: String
+    + email: String
+    + userName: String
+    + password: String
+    --
+    + rol: Rol
+}
+
+class CodeCie10 {
+    + id: Long
+    + code: String
+    + description: String
+}
+
+class Diagnosis {
+    + id: Long
+    --
+    + codeCie10: CodeCie10
+    + clinicalRecord: ClinicalRecord
+}
+
+class Medication {
+    + id: Long
+    + notes: String
+    --
+    + vademecum: Vademecum
+    + clinicalRecord: ClinicalRecord
+}
+
+class Patient {
+    + id: Long
+    + name: String
+    + lastName: String
+    + dni: String
+    + birthdate: Date
+    + gender: Gender
+    + adress: String
+    + phone: String
+    + email: String
+}
+
+class PhysicalExam {
+    + id: Long
+    + heartRate: Integer
+    + oxygenSaturation: Double
+    + respiratoryRate: Integer
+    + systolicPressure: Double
+    + diastolicPressure: Double
+    + beatsPerMinute: Integer
+    + glucose: Double
+    --
+    + clinicalRecord: ClinicalRecord
+}
+
+class FamilyHistory {
+    + id: Long
+    + coronaryArteryDisease: Boolean
+    + myocardialInfarction: Boolean
+    + hypertension: Boolean
+    + asthma: Boolean
+    + copd: Boolean
+    + tuberculosis: Boolean
+    + diabetes: Boolean
+    + obesity: Boolean
+    + metabolicSyndrome: Boolean
+    + anemia: Boolean
+    + hemophilia: Boolean
+    + stroke: Boolean
+    + alzheimer: Boolean
+    + multipleSclerosis: Boolean
+    + hemochromatosis: Boolean
+    + cysticFibrosis: Boolean
+    + depression: Boolean
+    + schizophrenia: Boolean
+    + rheumatoidArthritis: Boolean
+    + lupus: Boolean
+    + celiacDisease: Boolean
+    + chronicKidneyDisease: Boolean
+    + diabeticNephropathy: Boolean
+    + breastCancer: Boolean
+    + colonCancer: Boolean
+    + lungCancer: Boolean
+    + inflammatoryBowelDisease: Boolean
+    + hypothyroidism: Boolean
+    + otherMedicalHistory: String
+    --
+    + clinicalRecord: ClinicalRecord
+}
+
+class PersonalHistory {
+    + id: Long
+    + diabetes: Boolean
+    + hypertension: Boolean
+    + coronaryArteryDisease: Boolean
+    + bronchialAsthma: Boolean
+    + bronchopulmonaryDisease: Boolean
+    + psychopathy: Boolean
+    + allergies: String
+    + tuberculosis: Boolean
+    + sexuallyTransmittedInfection: Boolean
+    + gout: Boolean
+    + endocrineDisorders: Boolean
+    + nephropathies: Boolean
+    + uropathies: Boolean
+    + hematopathies: Boolean
+    + ulcer: Boolean
+    + hepatitis: Boolean
+    + fever: Boolean
+    + otherMedicalHistory: String
+    + cancer: String
+    --
+    + clinicalRecord: ClinicalRecord
+}
+
+class Vademecum {
+    + id: Long
+    + laboratorio_titular: String
+    + numero_certificado: String
+    + nombre_generico: String
+    + concentracion: String
+    + forma_farmaceutica: String
+    + presentacion: String
+    + nombre_comercial: String
+}
+
+enum Gender {
+    FEMENINO
+    MASCULINO
+    NOESPECIFICAR
+}
+
+class Rol {
+    + id: Long
+    + nameRol: NameRol
+}
+
+enum NameRol {
+    ROLE_ADMIN
+    ROLE_USER
+}
+
+ClinicalRecord --|{ Patient
+ClinicalRecord --|{ Medication
+ClinicalRecord --|{ Diagnosis
+ClinicalRecord --|{ PhysicalExam
+ClinicalRecord --|{ PersonalHistory
+ClinicalRecord --|{ FamilyHistory
+
+Diagnosis --|{ CodeCie10
+
+Medication --|{ Vademecum
+
+Patient -- Gender
+
+Medic -- Rol
+
+Rol -- NameRol
+
+@enduml

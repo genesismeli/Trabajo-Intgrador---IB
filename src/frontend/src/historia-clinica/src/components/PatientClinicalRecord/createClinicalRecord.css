@@ -5,6 +5,12 @@
     --color4: #7F7F7F;
  }
 
+.respuesta-chat-gpt {
+  border: 2px solid var(--color4); /* Establece el borde con un grosor de 2px y utiliza el color de la variable --color4 */
+  background-color: var(--color4); /* Establece el color de fondo utilizando la variable --color4 */
+  padding: 10px; /* Añade un espacio interno de 10px para separar el contenido del borde */
+  color: white; /* Establece el color del texto en blanco */
+}
 
 .clinical-record-container {
    display: flex;
