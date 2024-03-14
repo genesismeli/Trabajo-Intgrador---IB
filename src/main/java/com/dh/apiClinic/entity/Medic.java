@@ -1,5 +1,6 @@
 package com.dh.apiClinic.entity;
 
+import com.dh.apiClinic.enums.Speciality;
 import com.dh.apiClinic.security.entity.Rol;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class Medic {
     private String registrationNumber;
     @Column
     @NotBlank
-    private String speciality;
+    private Speciality speciality;
     @Column
     @NotBlank
     private String email;
@@ -45,11 +46,11 @@ public class Medic {
     @NotBlank
     private String password;
 
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "medic_rol", joinColumns = @JoinColumn(name = "medic_id"),
             inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private Rol rol;
-
 
 
 }

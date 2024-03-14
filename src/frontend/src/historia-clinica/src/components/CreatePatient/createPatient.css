@@ -33,6 +33,7 @@
 .create-patient-container input[type="text"],
 .create-patient-container input[type="email"],
 .create-patient-container input[type="date"],
+.create-patient-container input[type="password"],
 .create-patient-container select {
   width: calc(100% - 20px); /* Ajusta el ancho del campo de entrada */
   padding: 8px; /* Ajusta el espacio interno del campo de entrada */
@@ -45,8 +46,8 @@
   padding: 8px; /* Ajusta el espacio interno del campo de entrada */
   margin-top: 5px;
   font-size: 14px;
-
 }
+
 table td button {
   display: flex;
   align-items: center;

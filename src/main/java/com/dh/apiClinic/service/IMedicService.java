@@ -21,4 +21,6 @@ public interface IMedicService {
     MedicDTO convertEntityToDto(Medic medic);
 
     List<MedicDTO> searchMedics(String name, String lastName, String registrationNumber);
+
+    Long findMedicIdByUserName(String username);
 }

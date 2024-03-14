@@ -14,4 +14,5 @@ public interface IPatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByNameContainingOrLastNameContainingOrDniContaining(
             String name, String lastName, String dni);
     boolean existsByDni(String dni);
+    Patient findByUserName(String userName);
 }

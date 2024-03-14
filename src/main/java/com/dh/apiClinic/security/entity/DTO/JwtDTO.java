@@ -13,11 +13,13 @@ public class JwtDTO {
     private String bearer = "Bearer";
     private String userName;
     private Collection<? extends GrantedAuthority> authorities;
+    private Boolean changedPassword;
 
-    public JwtDTO(String token, String userName, Collection<? extends GrantedAuthority> authorities) {
+    public JwtDTO(String token, String userName, Collection<? extends GrantedAuthority> authorities, Boolean changedPassword) {
         this.token = token;
         this.userName = userName;
         this.authorities = authorities;
+        this.changedPassword = changedPassword;
     }
 
 

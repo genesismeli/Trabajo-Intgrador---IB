@@ -13,6 +13,7 @@ class Login extends Component {
     };
   }
 
+
   handleInputChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value, errorMessage: '' });
@@ -24,8 +25,6 @@ class Login extends Component {
     const { userName, password } = this.state;
     const userData = { userName, password };
 
-    // Envía la solicitud HTTP al backend para el inicio de sesión
-    // Puedes usar fetch, axios u otra biblioteca de HTTP aquí
     fetch('http://localhost:8081/auth/login', {
       method: 'POST',
       headers: {
@@ -34,28 +33,40 @@ class Login extends Component {
       body: JSON.stringify(userData),
     })
       .then((response) => response.json())
-            .then((data) => {
-              if (data.token) {
-                localStorage.setItem('token', data.token);
-                // Verifica si la respuesta contiene un token y el rol del usuario
-                if (data.authorities.some(role => role.authority === 'ROLE_USER')) {
-                  // Redirige a la lista de pacientes para el usuario
-                  window.location.href = '/patient/list';
-                } else if (data.authorities.some(role => role.authority === 'ROLE_ADMIN')) {
-                  // Redirige a la lista de médicos para el médico
-                  window.location.href = '/medic/list';
-                } else {
-                  console.error('Rol desconocido:', data.authorities);
-                }
-              } else {
-                console.error('Error: No se recibió un token después del inicio de sesión.');
-              }
-            })
-            .catch((error) => {
-              console.error('Error al iniciar sesión:', error);
-              this.setState({ errorMessage: 'Usuario o contraseña incorrectos' });
-            });
-      };
+      .then((data) => {
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userName', data.userName);
+          // Verifica si la respuesta contiene un token y el rol del usuario
+          if (data.authorities.some(role => role.authority === 'ROLE_USER')) {
+            // Redirige a la lista de pacientes para el usuario
+            window.location.href = '/patient/list';
+          } else if (data.authorities.some(role => role.authority === 'ROLE_ADMIN')) {
+            // Redirige a la lista de médicos para el médico
+            window.location.href = '/medic/list';
+          } else if (data.authorities.some(role => role.authority === 'ROLE_PATIENT')) {
+            // Redirige a la lista de historias clínicas para el paciente
+            window.location.href = '/patient/list/clinicalRecord';
+          } else {
+            console.error('Rol desconocido:', data.authorities);
+          }
+
+          // Verifica si el usuario necesita cambiar la contraseña
+          if (!data.changedPassword) {
+            // Redirige al usuario a la página de cambio de contraseña
+            window.location.href = '/change-password';
+          }
+        } else {
+          console.error('Error: No se recibió un token después del inicio de sesión.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al iniciar sesión:', error);
+        this.setState({ errorMessage: 'Usuario o contraseña incorrectos' });
+      });
+  };
+
+
 
   render() {
      if (this.state.redirectToMedicList) {

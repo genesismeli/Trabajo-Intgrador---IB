@@ -37,6 +37,12 @@ public class ClinicalRecord {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    // Agregar referencia al médico que realizó la ficha clínica
+    @ManyToOne
+    @JoinColumn(name = "medic_id")
+    private Medic medic;
+
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "clinical_record_medications",
@@ -85,6 +91,9 @@ public class ClinicalRecord {
 
     @Column(name= "anamnesis")
     private String anamnesis;
+
+    @Column(name= "medical_certificate")
+    private String medicalCertificate;
 
     @Transient
     private String gptSearchQuery;

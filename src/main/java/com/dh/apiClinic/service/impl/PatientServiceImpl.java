@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class PatientServiceImpl implements IPatientService {
             Patient patient = mapper.convertValue(patientDTO, Patient.class);
             patientRepository.save(patient);
         } else {
-            throw new ResourceNotFoundException("Medic", "id", "id not found: " + patientDTO.getId());
+            throw new ResourceNotFoundException("Patient", "id", "id not found: " + patientDTO.getId());
         }
 
     }
@@ -70,6 +71,16 @@ public class PatientServiceImpl implements IPatientService {
     }
 
     @Override
+    public Long findPatientIdByUserName(String userName) {
+        Patient patient = patientRepository.findByUserName(userName);
+        if (patient != null) {
+            return patient.getId();
+        } else {
+            throw new EntityNotFoundException("Patient not found with username: " + userName);
+        }
+    }
+
+    @Override
     public void savePatient(PatientDTO newPatientDTO) {
         saveMethod(newPatientDTO);
     }
@@ -97,6 +108,8 @@ public class PatientServiceImpl implements IPatientService {
         patientDTO.setAdress(patient.getAdress());
         patientDTO.setPhone(patient.getPhone());
         patientDTO.setEmail(patient.getEmail());
+        patientDTO.setUserName(patient.getUserName());
+        patientDTO.setPassword(patient.getPassword());
 
         return patientDTO;
     }

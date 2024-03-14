@@ -2,6 +2,7 @@ package com.dh.apiClinic.controller;
 
 import com.dh.apiClinic.DTO.ClinicalRecordDTO;
 import com.dh.apiClinic.DTO.PhysicalExamDTO;
+import com.dh.apiClinic.enums.Speciality;
 import com.dh.apiClinic.service.IClinicalRecordService;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -12,10 +13,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
 
 
 import java.io.ByteArrayOutputStream;
@@ -62,13 +70,17 @@ public class PdfExamController {
 
     private String generateClinicalRecordContent(ClinicalRecordDTO clinicalRecord) {
         StringBuilder contentBuilder = new StringBuilder();
-        contentBuilder.append("Información General:\n");
         contentBuilder.append("Fecha: ").append(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(clinicalRecord.getDate())).append("\n");
+        contentBuilder.append("_________________________Datos del Paciente______________________________________\n");
         contentBuilder.append("Nombre del Paciente: ").append(clinicalRecord.getPatient().getName()).append("\n");
         contentBuilder.append("Apellido del Paciente: ").append(clinicalRecord.getPatient().getLastName()).append("\n");
         contentBuilder.append("Fecha de Nacimiento: ").append(new SimpleDateFormat("dd/MM/yyyy").format(clinicalRecord.getPatient().getBirthdate())).append("\n");
         contentBuilder.append("Email: ").append(clinicalRecord.getPatient().getEmail()).append("\n\n");
-
+        contentBuilder.append("_________________________Datos del Profesional____________________________________\n");
+        contentBuilder.append("Nombre del Profesional: ").append(clinicalRecord.getMedic().getName()).append("\n");
+        contentBuilder.append("Apellido del Profesional: ").append(clinicalRecord.getMedic().getLastName()).append("\n");
+        contentBuilder.append("Especialidad: ").append(getSpecialityValue(clinicalRecord.getMedic().getSpeciality())).append("\n");
+        contentBuilder.append("Email: ").append(clinicalRecord.getMedic().getEmail()).append("\n\n");
         // Sección de Signos Vitales
         for (PhysicalExamDTO physicalExam : clinicalRecord.getPhysicalExams()) {
             appendPhysicalExamData(contentBuilder, physicalExam);
@@ -76,12 +88,15 @@ public class PdfExamController {
         return contentBuilder.toString();
     }
 
+    private String getSpecialityValue(Speciality speciality) {
+        return speciality != null ? speciality.getValue() : "";
+    }
 
     private void appendPhysicalExamData(StringBuilder contentBuilder, PhysicalExamDTO exam) {
         if (exam.getHeartRate() != null || exam.getOxygenSaturation() != null || exam.getRespiratoryRate() != null
                 || exam.getSystolicPressure() != null || exam.getDiastolicPressure() != null || exam.getBeatsPerMinute() != null ||
                 exam.getGlucose() != null) {
-            contentBuilder.append("Signos Vitales:\n");
+            contentBuilder.append("______________________________Signos Vitales____________________________________\n");
             if (exam.getHeartRate() != null) {
                 contentBuilder.append("F. Cardíaca: ").append(exam.getHeartRate()).append("\n");
             }
@@ -122,7 +137,10 @@ public class PdfExamController {
 
         return outputStream.toByteArray();
     }
-    @Operation(summary = "recordId Pdf for signs vitals")
+    @Operation(summary = "recordId Pdf for signs vitals",
+            parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+            security = @SecurityRequirement(name = "jwtAuth"))
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_PATIENT') ")
     @GetMapping("/clinical-record/vital-signs/{recordId}/pdf")
     public ResponseEntity<byte[]> generateClinicalRecordPdf(@PathVariable Long recordId) {
         ClinicalRecordDTO clinicalRecord = iclinicalRecordService.findClinicalRecordById(recordId);

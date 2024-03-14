@@ -8,6 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,23 +17,39 @@ import java.util.Date;
 public class PatientDTO {
 
     private Long id;
+
     @NotBlank(message = "El nombre es obligatorio")
     private String name;
+
     @NotBlank(message = "El apellido es obligatorio")
     private String lastName;
+
     @NotBlank(message = "El DNI es obligatorio")
     private String dni;
+
     @NotBlank(message = "La fecha de nacimiento es obligatoria")
     private Date birthdate;
+
     @NotBlank(message = "El sexo es obligatorio")
     private Gender gender;
+
     @NotBlank(message = "La dirección es obligatoria")
     private String adress;
+
     @NotBlank(message = "El número de teléfono es obligatorio")
     @Pattern(regexp = "\\d{10}", message = "El número de teléfono debe contener 10 dígitos")
     private String phone;
+
     @NotBlank(message = "El correo electrónico es obligatorio")
     @Email(message = "El correo electrónico debe ser válido")
     private String email;
+
+    @NotBlank(message = "El usuario es necesario")
+    private String userName;
+
+    @NotBlank(message = "La contraseña es obligatoria")
+    private String password;
+
+    private Set<String> roles = new HashSet<>();
 
 }

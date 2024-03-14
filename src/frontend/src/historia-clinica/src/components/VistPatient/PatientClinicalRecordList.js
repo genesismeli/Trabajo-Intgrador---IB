@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import './clinicalRecord.css';
+import './PatientClinicalRecordList.css';
 import Message from '../Message.js';
 import ViewIcon from '../../assets/icons/view-icon.svg';
 import DownloadIcon from '../../assets/icons/download-icon.svg';
@@ -9,10 +8,8 @@ import AntIcon from '../../assets/icons/flecha-ant-icon.svg';
 import MedicationsIcon from '../../assets/icons/medication-icon.svg';
 import VitalSignsIcon from '../../assets/icons/vital_signs-icon.svg';
 import DiagnosisIcon from '../../assets/icons/diagnosis-icon.svg';
-import CertificateIcon from '../../assets/icons/certificado-medico-icon.svg';
 
 const formatBirthdate = (birthdate) => {
-  // Lógica de formateo de fecha aquí (asegúrate de implementarla según tus necesidades)
   return new Date(birthdate).toLocaleDateString();
 };
 
@@ -27,44 +24,62 @@ const ClinicalRecordList = () => {
   const [medicData, setMedicData] = useState(null);
 
 
+  const patientId = ''
+  const userName = localStorage.getItem('userName');
+  console.log('PRUEBA DE USERNAME', localStorage.getItem('userName'))
 
-  const { patientId } = useParams();
 
   useEffect(() => {
-   const token = localStorage.getItem('token');
-    // Llamada a la API para obtener las fichas clínicas del paciente
-   fetch(`http://localhost:8081/clinical/patient/${patientId}?page=${currentPage}`, {
-     headers: {
-       Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
-     },
-   })
-
-      .then((response) => response.json())
-      .then((data) => {
-        setClinicalRecords(data.content);
-        setTotalPages(data.totalPages);
-      })
-      .catch((error) => {
-        console.error('Error al obtener las fichas clínicas:', error);
-      });
-
-    // Llamada a la API para obtener los datos del paciente
-
-    fetch(`http://localhost:8081/patient/${patientId}`,  {
-         headers: {
-         Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
-         },
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('userName');
+    console.log('PRUEBA DE USERNAME', localStorage.getItem('userName'))
+    // Llamada a la API para obtener el ID del paciente usando su nombre de usuario
+    fetch(`http://localhost:8081/patient/username/${username}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => response.json())
       .then((data) => {
-        setPatientData(data);
+      console.debug('PRUEBA DE DATA', data)
+        const patientId = data;
+        // Aquí puedes utilizar el ID del paciente para realizar otras llamadas de API
+        console.log("ID del paciente:", patientId);
+
+        // Llamada a la API para obtener las fichas clínicas del paciente
+        fetch(`http://localhost:8081/clinical/patient/${patientId}?page=${currentPage}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+          console.debug('PRUEBA DE DATA DE FICHAS')
+            setClinicalRecords(data.content);
+            setTotalPages(data.totalPages);
+          })
+          .catch((error) => {
+            console.error('Error al obtener las fichas clínicas:', error);
+          });
+
+        // Llamada a la API para obtener los datos del paciente
+        fetch(`http://localhost:8081/patient/${patientId}`,  {
+          headers: {
+            Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            setPatientData(data);
+          })
+          .catch((error) => {
+            console.error('Error al obtener los datos del paciente:', error);
+          });
       })
       .catch((error) => {
-        console.error('Error al obtener los datos del paciente:', error);
+        console.error('Error al obtener el ID del paciente:', error);
       });
-
-  }, [patientId, currentPage]);
-
+  }, [userName, currentPage, patientId]);
 
     const handleNextPage = () => {
       if (currentPage < totalPages - 1) {
@@ -78,12 +93,11 @@ const ClinicalRecordList = () => {
       }
     };
 
-    // Código en el componente anterior que muestra la lista de fichas clínicas
-    const handleCreateClinicalRecordClick = (patientId) => {
-      // Redirige al usuario a la página de creación de fichas clínicas
-      window.location.href = `/clinical/add?patientId=${patientId}`;
-    };
-
+  // Definición de la función formatSpecialityName
+  const formatSpecialityName = (name) => {
+    // Reemplaza los guiones bajos con espacios
+    return name.replace(/_/g, ' ');
+  };
 
 
   const viewClinicalRecord = (recordId) => {
@@ -105,32 +119,30 @@ const ClinicalRecordList = () => {
       });
   };
 
-   const loadMedicData = (recordId) => {
-     const token = localStorage.getItem('token');
-     fetch(`http://localhost:8081/clinical/${recordId}/medic`, {
-       headers: {
-         Authorization: `Bearer ${token}`,
-       },
-     })
-       .then((response) => response.json())
-       .then((data) => {
-         console.log(data);
-         setMedicData(data); // Almacena los datos del médico asociado al registro clínico
+
+     const loadMedicData = (recordId) => {
+       const token = localStorage.getItem('token');
+       fetch(`http://localhost:8081/clinical/${recordId}/medic`, {
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
        })
-       .catch((error) => {
-         console.error('Error al obtener los datos del médico:', error);
-       });
-   };
+         .then((response) => response.json())
+         .then((data) => {
+           console.log(data);
+           setMedicData(data); // Almacena los datos del médico asociado al registro clínico
+         })
+         .catch((error) => {
+           console.error('Error al obtener los datos del médico:', error);
+         });
+     };
 
-   // Cuando se abre el modal, cargamos los datos del médico asociado al registro clínico
-   useEffect(() => {
-     if (isModalOpen && selectedRecord) {
-       loadMedicData(selectedRecord.id);
-     }
-   }, [isModalOpen, selectedRecord]);
-
-
-
+     // Cuando se abre el modal, cargamos los datos del médico asociado al registro clínico
+     useEffect(() => {
+       if (isModalOpen && selectedRecord) {
+         loadMedicData(selectedRecord.id);
+       }
+     }, [isModalOpen, selectedRecord]);
 
 
 const downloadClinicalRecordMedications = (recordId) => {
@@ -281,15 +293,7 @@ const downloadClinicalRecord = (recordId) => {
       Authorization: `Bearer ${token}`,
     },
   })
-    .then((response) => {
-      if (response.ok) {
-        return response.blob();
-      } else if (response.status === 404) {
-        throw new Error('No se encontró la ficha clínica solicitada');
-      } else {
-        throw new Error('Error al obtener el PDF de la ficha clínica');
-      }
-    })
+    .then((response) => response.blob())
     .then((blob) => {
       // Crear un objeto URL para el blob
       const url = window.URL.createObjectURL(new Blob([blob]));
@@ -304,73 +308,15 @@ const downloadClinicalRecord = (recordId) => {
 
       // Revocar el objeto URL para liberar recursos
       window.URL.revokeObjectURL(url);
-      // Limpiar el mensaje de error después de una descarga exitosa
-      setErrorMessage(null);
     })
     .catch((error) => {
-      // Mostrar el mensaje de error
-      console.error(error.message);
-
-      // Mostrar el mensaje de error en la interfaz de usuario (reemplaza este código según tu implementación)
-      setErrorMessage(error.message);
+      console.error('Error al obtener el PDF:', error);
     });
 };
-
 
   const closeViewModal = () => {
     setIsModalOpen(false); // Cierra el modal
   };
-
-  // Definición de la función formatSpecialityName
-  const formatSpecialityName = (name) => {
-    // Reemplaza los guiones bajos con espacios
-    return name.replace(/_/g, ' ');
-  };
-
-const downloadClinicalRecordMedicalCertificate = (recordId) => {
-  // Llamada al nuevo endpoint para obtener el certificado médico en PDF
-  const token = localStorage.getItem('token');
-  fetch(`http://localhost:8081/pdf/medical-certificate/${recordId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      // Verificar el estado de la respuesta
-      if (response.ok) {
-        return response.blob();
-      } else if (response.status === 404) {
-        // Mostrar un mensaje en lugar de descargar el PDF
-        throw new Error('No existe certificado médico asociado a esta ficha');
-      } else {
-        throw new Error('Error al obtener el certificado médico');
-      }
-    })
-    .then((blob) => {
-      // Crear un objeto URL para el blob
-      const url = window.URL.createObjectURL(new Blob([blob]));
-
-      // Crear un enlace invisible y hacer clic en él para iniciar la descarga
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'certificado_medico.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-       // Revocar el objeto URL para liberar recursos
-       window.URL.revokeObjectURL(url);
-       // Limpiar el mensaje de error después de una descarga exitosa
-       setErrorMessage(null);
-     })
-     .catch((error) => {
-       // Mostrar el mensaje de error
-       console.error(error.message);
-
-       // Mostrar el mensaje de error en la interfaz de usuario (reemplaza este código según tu implementación)
-       setErrorMessage(error.message);
-     });
-};
 
   return (
 
@@ -383,12 +329,10 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
        <p> <strong>Fecha de nacimiento:</strong> {formatBirthdate(patientData.birthdate)} </p>
        <p> <strong>Teléfono:</strong> {patientData.phone} </p>
        <p> <strong>Email:</strong> {patientData.email} </p>
-       <p> <strong>DNI:</strong> {patientData.dni}</p>
+       <p> <strong>DNI:</strong> {patientData.dni} </p>
     </div>
     )}
-    <div>
-      <button className="create-record-button" onClick={() => handleCreateClinicalRecordClick(patientId)}>Crear Ficha </button>
-    </div>
+
     </div>
 
       <div className="clinical-record-container">
@@ -428,9 +372,6 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                   <button onClick={() => downloadClinicalRecordDiagnosis(record.id)} title="Descargar Ficha Dagnósticoss">
                     <img src={DiagnosisIcon} alt="Descargar Ficha Dagnósticos" width="20" height="20" />
                   </button>
-                <button onClick={() => downloadClinicalRecordMedicalCertificate(record.id)} title="Descargar Certificado Médico">
-                  <img src={CertificateIcon} alt="Descargar Certificado Médico" width="20" height="20" />
-                </button>
 
               </td>
             </tr>
@@ -462,7 +403,7 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
           {/* Renderiza los detalles de la ficha clínica */}
           {selectedRecord && (
             <div>
-            {medicData && (
+           {medicData && (
                  <div>
                    <h4 className="title">Datos del Profesional</h4>
                    <p> <strong>Profesional:</strong> {medicData.name} {medicData.lastName} </p>
@@ -472,6 +413,8 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
 
                 </div>
                 )}
+            {selectedRecord.reason && (
+            <div>
             <h4 className="title">Motivo de atención</h4>
             <table>
               <thead>
@@ -485,6 +428,10 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                 </tr>
               </tbody>
             </table>
+            </div>
+            )}
+            {selectedRecord.notes && (
+            <div>
             <h4 className="title">Notas</h4>
             <table>
               <thead>
@@ -498,6 +445,10 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                 </tr>
               </tbody>
             </table>
+            </div>
+            )}
+            {selectedRecord.anamnesis && (
+            <div>
             <h4 className="title">Anamnesis</h4>
             <table>
               <thead>
@@ -511,6 +462,8 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                 </tr>
               </tbody>
             </table>
+            </div>
+            )}
             <h4 className="title">Antecedentes Personales</h4>
             {selectedRecord.personalHistorys && selectedRecord.personalHistorys.length > 0 && (
             <table>
@@ -1028,7 +981,6 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                     <th>Nombre Genérico</th>
                     <th>Concentración</th>
                      <th>Presentación</th>
-                     <th>Notas o indicaciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1038,7 +990,6 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                       <td>{medication.vademecum?.nombre_generico}</td>
                       <td>{medication.vademecum?.concentracion}</td>
                       <td>{medication.vademecum?.presentacion}</td>
-                      <td>{medication.notes}</td>
 
                     </tr>
                   ))}
@@ -1064,10 +1015,6 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                   ))}
                 </tbody>
               </table>
-                <div>
-                    <h4 className="title">Certificado Médico</h4>
-                    <p>{selectedRecord.medicalCertificate}</p>
-                </div>
             </div>
           )}
         </div>
@@ -1077,5 +1024,3 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
 };
 
 export default ClinicalRecordList;
-
-

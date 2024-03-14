@@ -70,7 +70,8 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
                         "/swagger-ui.html",
                         "/webjars/**"
                 ).permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/change-password").authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
                 .and()

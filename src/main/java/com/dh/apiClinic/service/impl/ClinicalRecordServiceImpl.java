@@ -45,6 +45,9 @@ public class ClinicalRecordServiceImpl implements IClinicalRecordService {
     private IPatientService patientService;
 
     @Autowired
+    private IMedicService medicService;
+
+    @Autowired
     ObjectMapper mapper;
 
     public void saveMethod(ClinicalRecordDTO clinicalRecordDTO) {
@@ -117,6 +120,10 @@ public class ClinicalRecordServiceImpl implements IClinicalRecordService {
         if (clinicalRecord.getPatient() != null) {
             clinicalRecordDTO.setPatient(patientService.convertEntityToDto(clinicalRecord.getPatient()));
         }
+        // Mapea el ID del paciente
+        if (clinicalRecord.getMedic() != null) {
+            clinicalRecordDTO.setMedic(medicService.convertEntityToDto(clinicalRecord.getMedic()));
+        }
 
         // Mapea los PhysicalExams
         List<PhysicalExamDTO> physicalExamDTOs = new ArrayList<>();
@@ -153,7 +160,21 @@ public class ClinicalRecordServiceImpl implements IClinicalRecordService {
         return clinicalRecordDTO;
         }
 
+
+    @Override
+    public MedicDTO findMedicByClinicalRecordId(Long id) {
+        ClinicalRecord clinicalRecord = clinicalRecordRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ClinicalRecord", "id", id.toString()));
+
+        if (clinicalRecord.getMedic() != null) {
+            return medicService.convertEntityToDto(clinicalRecord.getMedic());
+        } else {
+            throw new ResourceNotFoundException("Medic", "id", "No se encontró médico asociado a la ficha clínica con ID: " + id);
+        }
     }
+
+
+}
 
 
 

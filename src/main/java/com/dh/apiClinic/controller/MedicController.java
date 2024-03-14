@@ -66,7 +66,7 @@ public class MedicController {
     @Operation(summary = "Find medic by id",
             parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
             security = @SecurityRequirement(name = "jwtAuth"))
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getMedic(@PathVariable Long id) {
         MedicDTO medicDTO = iMedicService.findMedicById(id);
@@ -93,6 +93,15 @@ public class MedicController {
 
     }
 
+    @Operation(summary = "Find medic by username",
+            parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+            security = @SecurityRequirement(name = "jwtAuth"))
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @GetMapping("/username/{username}")
+    public ResponseEntity<Long> getMedicIdByUsername(@PathVariable String username) {
+        Long patientId = iMedicService.findMedicIdByUserName(username);
+        return new ResponseEntity<>(patientId, HttpStatus.OK);
+    }
 
     @Operation(summary = "Update an existing medic",
             parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
