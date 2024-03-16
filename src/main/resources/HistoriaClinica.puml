@@ -8,6 +8,7 @@ class ClinicalRecord {
     + anamnesis: String
     + gptSearchQuery: String
     + medicalCertificate: String
+    + complementaryExams: String
     --
     + patient: Patient
     + medic: Medic
