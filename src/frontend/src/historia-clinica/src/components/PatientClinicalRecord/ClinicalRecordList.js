@@ -1064,6 +1064,19 @@ const downloadClinicalRecordMedicalCertificate = (recordId) => {
                   ))}
                 </tbody>
               </table>
+            <h4 className="title">Exámenes Complementarios</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Exámenes Complementarios</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{selectedRecord.complementaryExams}</td>
+                </tr>
+              </tbody>
+            </table>
                 <div>
                     <h4 className="title">Certificado Médico</h4>
                     <p>{selectedRecord.medicalCertificate}</p>

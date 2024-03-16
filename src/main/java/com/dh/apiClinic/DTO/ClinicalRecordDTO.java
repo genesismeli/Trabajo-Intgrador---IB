@@ -20,6 +20,7 @@ public class ClinicalRecordDTO {
     private String medicalCertificate;
     private List<PersonalHistoryDTO> personalHistorys;
     private List<FamilyHistoryDTO> familyHistorys;
+    private String complementaryExams;
 
 }
 

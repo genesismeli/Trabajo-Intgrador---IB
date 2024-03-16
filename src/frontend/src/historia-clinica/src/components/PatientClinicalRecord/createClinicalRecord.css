@@ -96,14 +96,6 @@
   cursor: pointer;
   margin-top: 20px;
 }
-.form-section-textarea {
-  width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    box-sizing: border-box;
-    border: 1px solid #ddd;
-    border-radius: 4px;
- }
 
 .form-submit-button {
   background-color: var(--primary-color);

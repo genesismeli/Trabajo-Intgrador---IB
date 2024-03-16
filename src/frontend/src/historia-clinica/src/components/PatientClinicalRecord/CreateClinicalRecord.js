@@ -14,6 +14,7 @@ class CreateClinicalRecord extends Component {
         anamnesis: '',
         reason: '',
         medicalCertificate:'',
+        complementaryExams:'',
         pubMedSearchTerm: '',
         anamnesisContent: '',
         codeCie10Options: [],
@@ -29,6 +30,7 @@ class CreateClinicalRecord extends Component {
         showMedicalCertificate: false,
         showPersonalHistory: false,
         showFamilyHistory: false,
+        showComplementaryExams: false,
         personalHistorys: [{},],
         familyHistorys: [{},],
         physicalExams: [{},],
@@ -301,13 +303,13 @@ getVademecumObject = (id) => {
     event.preventDefault();
     const token = localStorage.getItem('token');
     // Recopila los datos del estado
-    const { date, patient, medic, notes, reason, anamnesis, medicalCertificate, physicalExams, medications, diagnoses, personalHistorys, familyHistorys, showPersonalHistory, showFamilyHistory, showPhysicalExams, showMedications, showDiagnoses, showAnamnesis, showReason, showNotes, showMedicalCertificate } = this.state;
+    const { date, patient, medic, notes, reason, anamnesis, medicalCertificate, complementaryExams, physicalExams, medications, diagnoses, personalHistorys, familyHistorys, showPersonalHistory, showFamilyHistory, showPhysicalExams, showMedications, showDiagnoses, showAnamnesis, showReason, showNotes, showMedicalCertificate, showComplementaryExams } = this.state;
     if (!date) {
         // Puedes establecer la fecha actual aquí si es necesario
         this.setState({ date: new Date() });
         return;
     }
-    const isAnySectionFilled = [notes, anamnesis, reason, medicalCertificate, physicalExams, personalHistorys, familyHistorys, medications, diagnoses].some(section => {
+    const isAnySectionFilled = [notes, anamnesis, reason, medicalCertificate, complementaryExams, physicalExams, personalHistorys, familyHistorys, medications, diagnoses].some(section => {
         if (Array.isArray(section)) {
           return section.some(entry => Object.values(entry).some(value => value !== ''));
         } else {
@@ -320,7 +322,7 @@ getVademecumObject = (id) => {
         return;
       }
     // Validación: Verifica si todas las secciones están vacías
-      if (!date && !physicalExams.length && !medications.length && !diagnoses.length && !anamnesis.length && !notes.length && !reason.length && !personalHistorys.length && !familyHistorys.length && !medicalCertificate.length ) {
+      if (!date && !physicalExams.length && !medications.length && !diagnoses.length && !anamnesis.length && !notes.length && !reason.length && !personalHistorys.length && !familyHistorys.length && !medicalCertificate.length && !complementaryExams.length ) {
         this.setState({ showMessage: true });
         return;
       }
@@ -345,6 +347,8 @@ getVademecumObject = (id) => {
         activeSectionData ={ familyHistorys };
       }else if (showMedicalCertificate) {
         activeSectionData ={ medicalCertificate };
+      }else if (showComplementaryExams) {
+        activeSectionData ={ complementaryExams };
       }
 
       // Valida la sección activa
@@ -356,7 +360,7 @@ getVademecumObject = (id) => {
 
     // Elimina las secciones que están completamente vacías
       const nonEmptySections = Object.fromEntries(
-        Object.entries({ physicalExams, medications, diagnoses, notes, anamnesis, reason, personalHistorys, familyHistorys, medicalCertificate }).filter(([key, value]) => {
+        Object.entries({ physicalExams, medications, diagnoses, notes, anamnesis, reason, personalHistorys, familyHistorys, medicalCertificate, complementaryExams }).filter(([key, value]) => {
           if (Array.isArray(value)) {
             // Filtra los elementos null en la matriz
             const filteredArray = value.filter(item => item !== null);
@@ -379,6 +383,7 @@ getVademecumObject = (id) => {
       nonEmptySections.showPersonalHistory = showPersonalHistory;
       nonEmptySections.showFamilyHistory = showFamilyHistory;
       nonEmptySections.showMedicalCertificate = showMedicalCertificate;
+      nonEmptySections.showComplementaryExams = showComplementaryExams;
 
       // Construye el objeto con la información de la ficha clínica
       const clinicalRecordData = {
@@ -390,6 +395,7 @@ getVademecumObject = (id) => {
         anamnesis,
         reason,
         medicalCertificate,
+        complementaryExams,
         diagnoses: diagnoses.map(diagnosis => ({
               codeCie10: this.getCodeCie10Object(diagnosis.codeCie10),
               status: diagnosis.status,
@@ -455,7 +461,7 @@ getVademecumObject = (id) => {
         showMessageDiagnosis: false,
     }));
 
-  const otherFields = ['showPhysicalExams', 'showMedications', 'showDiagnoses', 'showAnamnesis', 'showNotes', 'showReason', 'showPersonalHistory', 'showFamilyHistory', 'showMedicalCertificate'];
+  const otherFields = ['showPhysicalExams', 'showMedications', 'showDiagnoses', 'showAnamnesis', 'showNotes', 'showReason', 'showPersonalHistory', 'showFamilyHistory', 'showMedicalCertificate', 'showComplementaryExams'];
     otherFields.forEach((otherField) => {
       if (otherField !== field) {
         this.setState({ [otherField]: false });
@@ -1239,7 +1245,7 @@ renderFamilyHistoryFields() {
                name="reason"
                value={this.state.reason}
                onChange={this.handleInputChange}
-               className="form-input-textarea"
+               className="form-input"
              />
            </label>
          </div>
@@ -1370,6 +1376,26 @@ renderFamilyHistoryFields() {
                        </label>
                      </div>
                    )}
+           <h3
+              className="form-section-title"
+              onClick={() => this.handleToggleFields('showComplementaryExams')}
+            >
+              Exámenes Complementarios
+              {this.state.showComplementaryExams ? ' ▼' : ' ▶'}
+            </h3>
+            {this.state.showComplementaryExams && (
+              <div className="form-section-textarea">
+                <label className="form-label">
+                  Exámenes Complementarios
+                  <textarea
+                    name="complementaryExams"
+                    value={this.state.complementaryExams}
+                    onChange={this.handleInputChange}
+                    className="form-input"
+                  />
+                </label>
+              </div>
+            )}
 
            <button type="submit" className="form-submit-button">
              Guardar Ficha Clínica

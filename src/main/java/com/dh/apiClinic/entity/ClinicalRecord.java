@@ -95,6 +95,9 @@ public class ClinicalRecord {
     @Column(name= "medical_certificate")
     private String medicalCertificate;
 
+    @Column(name= "complementary_exams")
+    private String complementaryExams;
+
     @Transient
     private String gptSearchQuery;
 
