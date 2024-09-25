@@ -9,9 +9,12 @@ class CreateClinicalRecord extends Component {
       this.state = {
         date: '',
         patient: '',
+        medic:'',
         notes: '',
         anamnesis: '',
         reason: '',
+        medicalCertificate:'',
+        complementaryExams:'',
         pubMedSearchTerm: '',
         anamnesisContent: '',
         codeCie10Options: [],
@@ -24,26 +27,97 @@ class CreateClinicalRecord extends Component {
         showNotes: false,
         showAnamnesis: false,
         showReason: false,
+        showMedicalCertificate: false,
         showPersonalHistory: false,
         showFamilyHistory: false,
+        showComplementaryExams: false,
         personalHistorys: [{},],
         familyHistorys: [{},],
         physicalExams: [{},],
         medications: [{},],
         diagnoses: [{},],
         isModalOpen: false,
+        anamnesisResponse: '',
       };
 
 
   }
 
+    handleSearchAnamnesis = () => {
+        const token = localStorage.getItem('token');
+        const { anamnesis } = this.state;
+
+        // Realizar la solicitud al backend para buscar en Chat GPT
+        fetch(`http://localhost:8081/ai/obtenerRespuesta?mensaje=${encodeURIComponent(anamnesis)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        })
+          .then(response => response.text())
+          .then(data => {
+            this.setState({ anamnesisResponse: data });
+          })
+          .catch(error => {
+            console.error('Error al buscar en Chat GPT:', error);
+          });
+      };
+
   componentDidMount() {
-      // Obtén el ID del paciente de la URL o de donde sea que lo hayas pasado
       const params = new URLSearchParams(window.location.search);
       const patientId = params.get('patientId');
-
       // Actualiza el estado con el ID del paciente
       this.setState({ patient: patientId });
+
+      const token = localStorage.getItem('token');
+      const storedUsername = localStorage.getItem('userName');
+
+      if (token) {
+
+           // Obtener nombre de usuario
+           fetch('http://localhost:8081/user/username', {
+             method: 'GET',
+             headers: {
+               'Authorization': `Bearer ${token}`
+             }
+           })
+           .then(response => response.text())
+           .then(data => {
+             this.setState({ username: data });
+           })
+           .catch(error => {
+             console.error('Error al obtener el nombre de usuario:', error);
+           });
+
+           // Obtener datos del médico
+           fetch(`http://localhost:8081/medic/username/${storedUsername}`, {
+             headers: {
+               Authorization: `Bearer ${token}`,
+             },
+           })
+           .then(response => response.json())
+           .then(data => {
+             const medicId = data;
+
+             // Llamada a la API para obtener los datos del paciente
+             fetch(`http://localhost:8081/medic/${medicId}`, {
+               headers: {
+                 Authorization: `Bearer ${token}`,
+               },
+             })
+             .then((response) => response.json())
+             .then((data) => {
+               this.setState({ medic: data });
+             })
+             .catch((error) => {
+               console.error('Error al obtener los datos del medico:', error);
+             });
+           })
+           .catch((error) => {
+             console.error('Error al obtener el ID del medico:', error);
+           });
+         }
 
       // Obtén las opciones de code_cie10 desde el backend al cargar el componente
           fetch('http://localhost:8081/cie10/options')
@@ -62,7 +136,6 @@ class CreateClinicalRecord extends Component {
               .catch((error) => console.error('Error al obtener las opciones de vamedecum:', error));
 
   // Realiza una solicitud al backend para obtener la información completa del paciente
-  const token = localStorage.getItem('token');
       fetch(`http://localhost:8081/patient/${patientId}`, {
           headers: {
            Authorization: `Bearer ${token}`, // Incluye el token en la cabecera de autorización
@@ -230,13 +303,13 @@ getVademecumObject = (id) => {
     event.preventDefault();
     const token = localStorage.getItem('token');
     // Recopila los datos del estado
-    const { date, patient, notes, reason, anamnesis, physicalExams, medications, diagnoses, personalHistorys, familyHistorys, showPersonalHistory, showFamilyHistory, showPhysicalExams, showMedications, showDiagnoses, showAnamnesis, showReason, showNotes } = this.state;
+    const { date, patient, medic, notes, reason, anamnesis, medicalCertificate, complementaryExams, physicalExams, medications, diagnoses, personalHistorys, familyHistorys, showPersonalHistory, showFamilyHistory, showPhysicalExams, showMedications, showDiagnoses, showAnamnesis, showReason, showNotes, showMedicalCertificate, showComplementaryExams } = this.state;
     if (!date) {
         // Puedes establecer la fecha actual aquí si es necesario
         this.setState({ date: new Date() });
         return;
     }
-    const isAnySectionFilled = [notes, anamnesis, reason, physicalExams, personalHistorys, familyHistorys, medications, diagnoses].some(section => {
+    const isAnySectionFilled = [notes, anamnesis, reason, medicalCertificate, complementaryExams, physicalExams, personalHistorys, familyHistorys, medications, diagnoses].some(section => {
         if (Array.isArray(section)) {
           return section.some(entry => Object.values(entry).some(value => value !== ''));
         } else {
@@ -249,7 +322,7 @@ getVademecumObject = (id) => {
         return;
       }
     // Validación: Verifica si todas las secciones están vacías
-      if (!date && !physicalExams.length && !medications.length && !diagnoses.length && !anamnesis.length && !notes.length && !reason.length && !personalHistorys.length && !familyHistorys.length ) {
+      if (!date && !physicalExams.length && !medications.length && !diagnoses.length && !anamnesis.length && !notes.length && !reason.length && !personalHistorys.length && !familyHistorys.length && !medicalCertificate.length && !complementaryExams.length ) {
         this.setState({ showMessage: true });
         return;
       }
@@ -272,6 +345,10 @@ getVademecumObject = (id) => {
         activeSectionData ={ personalHistorys };
       }else if (showFamilyHistory) {
         activeSectionData ={ familyHistorys };
+      }else if (showMedicalCertificate) {
+        activeSectionData ={ medicalCertificate };
+      }else if (showComplementaryExams) {
+        activeSectionData ={ complementaryExams };
       }
 
       // Valida la sección activa
@@ -283,7 +360,7 @@ getVademecumObject = (id) => {
 
     // Elimina las secciones que están completamente vacías
       const nonEmptySections = Object.fromEntries(
-        Object.entries({ physicalExams, medications, diagnoses, notes, anamnesis, reason, personalHistorys, familyHistorys }).filter(([key, value]) => {
+        Object.entries({ physicalExams, medications, diagnoses, notes, anamnesis, reason, personalHistorys, familyHistorys, medicalCertificate, complementaryExams }).filter(([key, value]) => {
           if (Array.isArray(value)) {
             // Filtra los elementos null en la matriz
             const filteredArray = value.filter(item => item !== null);
@@ -305,15 +382,20 @@ getVademecumObject = (id) => {
       nonEmptySections.showReason = showReason;
       nonEmptySections.showPersonalHistory = showPersonalHistory;
       nonEmptySections.showFamilyHistory = showFamilyHistory;
+      nonEmptySections.showMedicalCertificate = showMedicalCertificate;
+      nonEmptySections.showComplementaryExams = showComplementaryExams;
 
       // Construye el objeto con la información de la ficha clínica
       const clinicalRecordData = {
         date,
         patient,
+        medic,
         ...nonEmptySections,
         notes,
         anamnesis,
         reason,
+        medicalCertificate,
+        complementaryExams,
         diagnoses: diagnoses.map(diagnosis => ({
               codeCie10: this.getCodeCie10Object(diagnosis.codeCie10),
               status: diagnosis.status,
@@ -379,7 +461,7 @@ getVademecumObject = (id) => {
         showMessageDiagnosis: false,
     }));
 
-  const otherFields = ['showPhysicalExams', 'showMedications', 'showDiagnoses', 'showAnamnesis', 'showNotes', 'showReason', 'showPersonalHistory', 'showFamilyHistory'];
+  const otherFields = ['showPhysicalExams', 'showMedications', 'showDiagnoses', 'showAnamnesis', 'showNotes', 'showReason', 'showPersonalHistory', 'showFamilyHistory', 'showMedicalCertificate', 'showComplementaryExams'];
     otherFields.forEach((otherField) => {
       if (otherField !== field) {
         this.setState({ [otherField]: false });
@@ -533,7 +615,7 @@ getVademecumObject = (id) => {
        </div>
      ));
    }
-renderPersonalHistoryFields() {
+ renderPersonalHistoryFields() {
   const {
     diabetes,
     hypertension,
@@ -1163,7 +1245,7 @@ renderFamilyHistoryFields() {
                name="reason"
                value={this.state.reason}
                onChange={this.handleInputChange}
-               className="form-input-textarea"
+               className="form-input"
              />
            </label>
          </div>
@@ -1207,6 +1289,12 @@ renderFamilyHistoryFields() {
                className="form-input"
              />
            </label>
+       <button type="button" className="form-submit-button" onClick={this.handleSearchAnamnesis}>Buscar en Chat GPT</button>
+    {this.state.anamnesisResponse && (
+      <div className="respuesta-chat-gpt">
+        Respuesta de Chat GPT: {this.state.anamnesisResponse}
+      </div>
+    )}
          </div>
        )}
             <h3
@@ -1268,6 +1356,46 @@ renderFamilyHistoryFields() {
             >
                Agregar Diagnóstico
             </button>
+                   <h3
+                     className="form-section-title"
+                     onClick={() => this.handleToggleFields('showMedicalCertificate')}
+                   >
+                     Certificado Médico
+                     {this.state.showMedicalCertificate ? ' ▼' : ' ▶'}
+                   </h3>
+                   {this.state.showMedicalCertificate && (
+                     <div className="form-section-textarea">
+                       <label className="form-label">
+                         Certificado Médico
+                         <textarea
+                           name="medicalCertificate"
+                           value={this.state.medicalCertificate}
+                           onChange={this.handleInputChange}
+                           className="form-input"
+                         />
+                       </label>
+                     </div>
+                   )}
+           <h3
+              className="form-section-title"
+              onClick={() => this.handleToggleFields('showComplementaryExams')}
+            >
+              Exámenes Complementarios
+              {this.state.showComplementaryExams ? ' ▼' : ' ▶'}
+            </h3>
+            {this.state.showComplementaryExams && (
+              <div className="form-section-textarea">
+                <label className="form-label">
+                  Exámenes Complementarios
+                  <textarea
+                    name="complementaryExams"
+                    value={this.state.complementaryExams}
+                    onChange={this.handleInputChange}
+                    className="form-input"
+                  />
+                </label>
+              </div>
+            )}
 
            <button type="submit" className="form-submit-button">
              Guardar Ficha Clínica
@@ -1279,6 +1407,4 @@ renderFamilyHistoryFields() {
      );
    }
  }
-
-
  export default CreateClinicalRecord;

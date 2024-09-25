@@ -1,0 +1,100 @@
+/* modal.css */
+.custom-modal {
+  font-family: 'Arial', sans-serif;
+  background-color: #545776;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px; /* Ajusta el ancho según tus necesidades */
+  max-width: 90%; /* Ajusta el ancho máximo según tus necesidades */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.tittle {
+    color: #1DBEB4;
+}
+
+.custom-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscurecido */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #fff;
+}
+
+.close-button:hover {
+  color: #ccc;
+}
+
+h2 {
+  font-size: 24px;
+  margin: 10px 0;
+}
+
+.upload-image-button {
+  background-color: #545776; /* Color azul */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+/* modal.css */
+
+/* Estilos para el botón de carga de imagen */
+.upload-button {
+  background-color: #007bff; /* Color azul */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.upload-button:hover {
+  background-color: #0056b3; /* Color azul más oscuro al pasar el mouse */
+}
+
+/* Estilos para el botón de selección de archivos */
+.file-input {
+  display: none; /* Ocultar el input de tipo archivo */
+}
+
+.custom-file-input {
+  background-color: #007bff; /* Color azul */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.custom-file-input:hover {
+  background-color: #0056b3; /* Color azul más oscuro al pasar el mouse */
+}
+

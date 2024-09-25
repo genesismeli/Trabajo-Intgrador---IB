@@ -14,6 +14,8 @@ public interface IPatientService {
 
     PatientDTO findPatientById(Long id);
 
+    Long findPatientIdByUserName(String userName);
+
     void savePatient(PatientDTO newPatientDTO);
 
     void deletePatient(Long id);

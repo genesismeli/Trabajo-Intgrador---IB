@@ -76,7 +76,7 @@ public class ClinicalRecordController {
         @Operation(summary = "Find clinical Record by id",
                 parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
                 security = @SecurityRequirement(name = "jwtAuth"))
-        @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+        @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER') or hasRole('ROLE_PATIENT')")
         @GetMapping("/{id}")
         public ResponseEntity<?> getClinicalRecord(@PathVariable Long id) {
             ClinicalRecordDTO clinicalRecordDTO = iclinicalRecordService.findClinicalRecordById(id);
@@ -143,7 +143,7 @@ public class ClinicalRecordController {
             parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
             security = @SecurityRequirement(name = "jwtAuth")
     )
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('USER') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER') or hasRole('ROLE_PATIENT') ")
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<PageDTO<ClinicalRecordDTO>> getClinicalRecordsByPatientId(
             @PathVariable Long patientId,
@@ -159,6 +159,18 @@ public class ClinicalRecordController {
         }
         return ResponseEntity.ok(clinicalRecords);
     }
+
+    @Operation(summary = "Consultar el medico creador del clinical Record",
+            parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+            security = @SecurityRequirement(name = "jwtAuth")
+    )
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER') or hasRole('ROLE_PATIENT') ")
+    @GetMapping("/{id}/medic")
+    public ResponseEntity<MedicDTO> getMedicByClinicalRecordId(@PathVariable Long id) {
+        MedicDTO medicDTO = iclinicalRecordService.findMedicByClinicalRecordId(id);
+        return new ResponseEntity<>(medicDTO, HttpStatus.OK);
+    }
+
 
 }
 

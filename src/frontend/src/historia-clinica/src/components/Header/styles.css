@@ -14,11 +14,14 @@
   justify-content: space-between;
   align-items: center;
 }
+body {
+  padding-top: 40px; /* Ajusta el padding superior para que coincida con la altura del header */
+}
 
 .left-section {
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 10px;
   font-weight: bold;
 }
 
@@ -30,10 +33,11 @@
   display: flex;
   align-items: center;
   margin-right: 40px;
+  flex-direction: column;
 }
 
 .cerrar-session {
-  background-color: #383b58;
+  background-color: #7F7F7F;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -82,6 +86,7 @@ h1 {
   cursor: pointer;
   position: relative;
   margin-right: 10px;
+  margin-left: 15px;
 }
 
 .go-to-patients:hover::after {
@@ -117,4 +122,53 @@ h1 {
   position: absolute;
   bottom: 0;
   left: 0;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.speciality-message {
+  font-size: 14px;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.speciality {
+  font-weight: normal;
+  font-style: italic;
+  color: #888;
+}
+.upload-image-section {
+  margin-top: 20px;
+}
+
+.upload-image-button {
+  background-color: #007bff; /* Color azul */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.upload-image-button:hover {
+  background-color: #0056b3; /* Color azul más oscuro al pasar el mouse */
+}
+
+/* Estilos para el botón de selección de archivos */
+.file-input {
+  display: none; /* Ocultar el input de tipo archivo */
+}
+.custom-file-input {
+  background-color: #007bff; /* Color azul */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.custom-file-input:hover {
+  background-color: #0056b3; /* Color azul más oscuro al pasar el mouse */
 }

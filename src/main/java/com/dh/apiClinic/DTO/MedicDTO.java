@@ -1,8 +1,10 @@
 package com.dh.apiClinic.DTO;
 
+import com.dh.apiClinic.enums.Speciality;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
@@ -25,7 +27,7 @@ public class MedicDTO {
     private String registrationNumber;
 
     @NotBlank (message = "La especialidad no puede estar vacía")
-    private String speciality;
+    private Speciality speciality;
 
     @NotBlank(message = "El correo electrónico es obligatorio")
     @Email(message = "El correo electrónico debe ser válido")
@@ -38,4 +40,5 @@ public class MedicDTO {
     private String password;
 
     private Set<String> roles = new HashSet<>();
+
 }

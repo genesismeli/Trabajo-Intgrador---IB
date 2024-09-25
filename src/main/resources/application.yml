@@ -14,13 +14,3 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-
-openai-service:
-  api-key: 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
-  gpt-model: gpt-3.5-turbo
-  http-client:
-    read-timeout: 2000
-    connect-timeout: 2000
-  urls:
-    base-url: https://api.openai.com/v1
-    chat-url: /chat/completions

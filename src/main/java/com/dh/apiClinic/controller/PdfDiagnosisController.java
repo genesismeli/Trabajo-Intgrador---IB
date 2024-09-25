@@ -2,7 +2,9 @@ package com.dh.apiClinic.controller;
 
 import com.dh.apiClinic.DTO.ClinicalRecordDTO;
 import com.dh.apiClinic.DTO.DiagnosisDTO;
+import com.dh.apiClinic.enums.Speciality;
 import com.dh.apiClinic.service.IClinicalRecordService;
+import com.dh.apiClinic.service.IMedicImageService;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -16,12 +18,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
+
 
 @Tag(name = "Pdf", description = "Metodo para pdf")
 @RestController
@@ -30,6 +38,9 @@ public class PdfDiagnosisController {
 
     @Autowired
     IClinicalRecordService iclinicalRecordService;
+
+    @Autowired
+    private IMedicImageService medicImageService;
 
     @Autowired
     public PdfDiagnosisController(IClinicalRecordService clinicalRecordService) {
@@ -83,12 +94,17 @@ public class PdfDiagnosisController {
             }
 
             // Sección de Información General
-            contentBuilder.append("Información General:\n");
             contentBuilder.append("Fecha: ").append(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(clinicalRecord.getDate())).append("\n");
+            contentBuilder.append("_________________________Datos del Paciente______________________________________\n");
             contentBuilder.append("Nombre del Paciente: ").append(clinicalRecord.getPatient().getName()).append("\n");
             contentBuilder.append("Apellido del Paciente: ").append(clinicalRecord.getPatient().getLastName()).append("\n");
             contentBuilder.append("Fecha de Nacimiento: ").append(new SimpleDateFormat("dd/MM/yyyy").format(clinicalRecord.getPatient().getBirthdate())).append("\n");
             contentBuilder.append("Email: ").append(clinicalRecord.getPatient().getEmail()).append("\n\n");
+            contentBuilder.append("_________________________Datos del Profesional____________________________________\n");
+            contentBuilder.append("Nombre del Profesional: ").append(clinicalRecord.getMedic().getName()).append("\n");
+            contentBuilder.append("Apellido del Profesional: ").append(clinicalRecord.getMedic().getLastName()).append("\n");
+            contentBuilder.append("Especialidad: ").append(getSpecialityValue(clinicalRecord.getMedic().getSpeciality())).append("\n");
+            contentBuilder.append("Email: ").append(clinicalRecord.getMedic().getEmail()).append("\n\n");
 
 
             for (DiagnosisDTO diagnosis : clinicalRecord.getDiagnoses()) {
@@ -101,6 +117,10 @@ public class PdfDiagnosisController {
         }
     }
 
+    private String getSpecialityValue(Speciality speciality) {
+        return speciality != null ? speciality.getValue() : "";
+    }
+
     // Función para verificar si un diagnóstico tiene datos válidos
     private boolean isValidDiagnosis(DiagnosisDTO diagnosis) {
         return diagnosis.getNotes() != null || (diagnosis.getCodeCie10() != null && diagnosis.getCodeCie10().getCode() != null);
@@ -108,7 +128,7 @@ public class PdfDiagnosisController {
 
     private void appendDiagnosisData(StringBuilder contentBuilder, DiagnosisDTO diagnosis) {
         if (diagnosis.getCodeCie10() != null || diagnosis.getNotes() != null) {
-            contentBuilder.append("Diagnósticos:\n");
+            contentBuilder.append("______________________________Diagnósticos____________________________________\n");
         }
         if (diagnosis.getCodeCie10() != null) {
             contentBuilder.append("Código: ").append(diagnosis.getCodeCie10().getCode()).append("\n");
@@ -136,7 +156,9 @@ public class PdfDiagnosisController {
 
         return outputStream.toByteArray();
     }
-    @Operation(summary = "recordId Pdf")
+    @Operation(summary = "recordId Pdf",
+            parameters = @Parameter(name = "Authorization", in = HEADER, description = "Json web token required", required = true),
+            security = @SecurityRequirement(name = "jwtAuth"))
     @GetMapping("/clinical-record/diagnosis/{recordId}/pdf")
     public ResponseEntity<byte[]> generateClinicalRecordPdf(@PathVariable Long recordId) {
         ClinicalRecordDTO clinicalRecord = iclinicalRecordService.findClinicalRecordById(recordId);

@@ -17,6 +17,12 @@
   margin-right: 2%; /* Ajusta el espacio entre los form-row */
 }
 
+.speciality {
+  width: calc(100% - 20px); /* Ajusta el ancho del campo de entrada */
+  padding: 8px; /* Ajusta el espacio interno del campo de entrada */
+  margin-top: 5px;
+  font-size: 14px;
+}
 .create-medic-container .form-field {
   width: 100%;
   display: flex;

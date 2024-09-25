@@ -9,6 +9,7 @@ import AntIcon from '../../assets/icons/flecha-ant-icon.svg';
 import MedicationsIcon from '../../assets/icons/medication-icon.svg';
 import VitalSignsIcon from '../../assets/icons/vital_signs-icon.svg';
 import DiagnosisIcon from '../../assets/icons/diagnosis-icon.svg';
+import CertificateIcon from '../../assets/icons/certificado-medico-icon.svg';
 
 const formatBirthdate = (birthdate) => {
   // Lógica de formateo de fecha aquí (asegúrate de implementarla según tus necesidades)
@@ -23,6 +24,8 @@ const ClinicalRecordList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [patientData, setPatientData] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [medicData, setMedicData] = useState(null);
+
 
 
   const { patientId } = useParams();
@@ -101,6 +104,34 @@ const ClinicalRecordList = () => {
         console.error('Error al obtener la ficha clínica por ID:', error);
       });
   };
+
+   const loadMedicData = (recordId) => {
+     const token = localStorage.getItem('token');
+     fetch(`http://localhost:8081/clinical/${recordId}/medic`, {
+       headers: {
+         Authorization: `Bearer ${token}`,
+       },
+     })
+       .then((response) => response.json())
+       .then((data) => {
+         console.log(data);
+         setMedicData(data); // Almacena los datos del médico asociado al registro clínico
+       })
+       .catch((error) => {
+         console.error('Error al obtener los datos del médico:', error);
+       });
+   };
+
+   // Cuando se abre el modal, cargamos los datos del médico asociado al registro clínico
+   useEffect(() => {
+     if (isModalOpen && selectedRecord) {
+       loadMedicData(selectedRecord.id);
+     }
+   }, [isModalOpen, selectedRecord]);
+
+
+
+
 
 const downloadClinicalRecordMedications = (recordId) => {
   // Llamada al nuevo endpoint para obtener el PDF
@@ -250,7 +281,15 @@ const downloadClinicalRecord = (recordId) => {
       Authorization: `Bearer ${token}`,
     },
   })
-    .then((response) => response.blob())
+    .then((response) => {
+      if (response.ok) {
+        return response.blob();
+      } else if (response.status === 404) {
+        throw new Error('No se encontró la ficha clínica solicitada');
+      } else {
+        throw new Error('Error al obtener el PDF de la ficha clínica');
+      }
+    })
     .then((blob) => {
       // Crear un objeto URL para el blob
       const url = window.URL.createObjectURL(new Blob([blob]));
@@ -265,15 +304,73 @@ const downloadClinicalRecord = (recordId) => {
 
       // Revocar el objeto URL para liberar recursos
       window.URL.revokeObjectURL(url);
+      // Limpiar el mensaje de error después de una descarga exitosa
+      setErrorMessage(null);
     })
     .catch((error) => {
-      console.error('Error al obtener el PDF:', error);
+      // Mostrar el mensaje de error
+      console.error(error.message);
+
+      // Mostrar el mensaje de error en la interfaz de usuario (reemplaza este código según tu implementación)
+      setErrorMessage(error.message);
     });
 };
+
 
   const closeViewModal = () => {
     setIsModalOpen(false); // Cierra el modal
   };
+
+  // Definición de la función formatSpecialityName
+  const formatSpecialityName = (name) => {
+    // Reemplaza los guiones bajos con espacios
+    return name.replace(/_/g, ' ');
+  };
+
+const downloadClinicalRecordMedicalCertificate = (recordId) => {
+  // Llamada al nuevo endpoint para obtener el certificado médico en PDF
+  const token = localStorage.getItem('token');
+  fetch(`http://localhost:8081/pdf/medical-certificate/${recordId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      // Verificar el estado de la respuesta
+      if (response.ok) {
+        return response.blob();
+      } else if (response.status === 404) {
+        // Mostrar un mensaje en lugar de descargar el PDF
+        throw new Error('No existe certificado médico asociado a esta ficha');
+      } else {
+        throw new Error('Error al obtener el certificado médico');
+      }
+    })
+    .then((blob) => {
+      // Crear un objeto URL para el blob
+      const url = window.URL.createObjectURL(new Blob([blob]));
+
+      // Crear un enlace invisible y hacer clic en él para iniciar la descarga
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'certificado_medico.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+       // Revocar el objeto URL para liberar recursos
+       window.URL.revokeObjectURL(url);
+       // Limpiar el mensaje de error después de una descarga exitosa
+       setErrorMessage(null);
+     })
+     .catch((error) => {
+       // Mostrar el mensaje de error
+       console.error(error.message);
+
+       // Mostrar el mensaje de error en la interfaz de usuario (reemplaza este código según tu implementación)
+       setErrorMessage(error.message);
+     });
+};
 
   return (
 
@@ -286,7 +383,7 @@ const downloadClinicalRecord = (recordId) => {
        <p> <strong>Fecha de nacimiento:</strong> {formatBirthdate(patientData.birthdate)} </p>
        <p> <strong>Teléfono:</strong> {patientData.phone} </p>
        <p> <strong>Email:</strong> {patientData.email} </p>
-       <p> <strong>DNI:</strong> {patientData.dni} </p>
+       <p> <strong>DNI:</strong> {patientData.dni}</p>
     </div>
     )}
     <div>
@@ -331,6 +428,9 @@ const downloadClinicalRecord = (recordId) => {
                   <button onClick={() => downloadClinicalRecordDiagnosis(record.id)} title="Descargar Ficha Dagnósticoss">
                     <img src={DiagnosisIcon} alt="Descargar Ficha Dagnósticos" width="20" height="20" />
                   </button>
+                <button onClick={() => downloadClinicalRecordMedicalCertificate(record.id)} title="Descargar Certificado Médico">
+                  <img src={CertificateIcon} alt="Descargar Certificado Médico" width="20" height="20" />
+                </button>
 
               </td>
             </tr>
@@ -362,6 +462,16 @@ const downloadClinicalRecord = (recordId) => {
           {/* Renderiza los detalles de la ficha clínica */}
           {selectedRecord && (
             <div>
+            {medicData && (
+                 <div>
+                   <h4 className="title">Datos del Profesional</h4>
+                   <p> <strong>Profesional:</strong> {medicData.name} {medicData.lastName} </p>
+                   <p> <strong>Especialidad:</strong> {formatSpecialityName(medicData.speciality)} </p>
+                   <p> <strong>Email:</strong> {medicData.email} </p>
+                   <p> <strong>Número de Registro:</strong> {medicData.registrationNumber} </p>
+
+                </div>
+                )}
             <h4 className="title">Motivo de atención</h4>
             <table>
               <thead>
@@ -918,6 +1028,7 @@ const downloadClinicalRecord = (recordId) => {
                     <th>Nombre Genérico</th>
                     <th>Concentración</th>
                      <th>Presentación</th>
+                     <th>Notas o indicaciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -927,6 +1038,7 @@ const downloadClinicalRecord = (recordId) => {
                       <td>{medication.vademecum?.nombre_generico}</td>
                       <td>{medication.vademecum?.concentracion}</td>
                       <td>{medication.vademecum?.presentacion}</td>
+                      <td>{medication.notes}</td>
 
                     </tr>
                   ))}
@@ -952,6 +1064,23 @@ const downloadClinicalRecord = (recordId) => {
                   ))}
                 </tbody>
               </table>
+            <h4 className="title">Exámenes Complementarios</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Exámenes Complementarios</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{selectedRecord.complementaryExams}</td>
+                </tr>
+              </tbody>
+            </table>
+                <div>
+                    <h4 className="title">Certificado Médico</h4>
+                    <p>{selectedRecord.medicalCertificate}</p>
+                </div>
             </div>
           )}
         </div>

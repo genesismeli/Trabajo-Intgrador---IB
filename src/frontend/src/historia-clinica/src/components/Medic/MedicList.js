@@ -27,6 +27,7 @@ class MedicList extends Component {
   }
 
 
+
   componentDidMount() {
 
     const { currentPage } = this.state;
@@ -43,6 +44,12 @@ class MedicList extends Component {
         console.error('Error al obtener la lista de médicos:', error);
       });
   };
+
+        // Función para formatear el nombre de la especialidad
+        formatSpecialityName = (name) => {
+          // Reemplaza los guiones bajos con espacios
+          return name.replace(/_/g, ' ');
+        };
 
     handleSearchNameChange = (event) => {
           this.setState({ searchName: event.target.value });
@@ -158,6 +165,8 @@ class MedicList extends Component {
             }
         };
 
+
+
   handleCreateMedicClick = () => {
     // Utiliza window.location.href para redirigir a la página de creación de médicos
     window.location.href = '/medic/create';
@@ -173,6 +182,7 @@ class MedicList extends Component {
       this.updateMedicList();
 
     };
+
 
 
   render() {
@@ -220,13 +230,13 @@ class MedicList extends Component {
                   <td>{medic.name}</td>
                   <td>{medic.lastName}</td>
                   <td>{medic.registrationNumber}</td>
-                  <td>{medic.speciality}</td>
+                  <td>{this.formatSpecialityName(medic.speciality)}</td>
                   <td>{medic.email}</td>
                   <td>
-                      <button onClick={() => this.openEditModal(medic)} title="Editar Paciente">
+                      <button onClick={() => this.openEditModal(medic)} title="Editar Médico">
                           <img src={PencilIcon} alt="Editar" width="20" height="20" />
                       </button>
-                     <button onClick={() => this.openDeleteModal(medic)} title="Borrar Paciente">
+                     <button onClick={() => this.openDeleteModal(medic)} title="Borrar Médico">
                         <img src={TrashIcon} alt="Eliminar" width="20" height="20" />
                      </button>
                   </td>

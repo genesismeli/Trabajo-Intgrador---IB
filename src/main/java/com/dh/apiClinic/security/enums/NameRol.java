@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum NameRol {
     ROLE_ADMIN("ROL_ADMIN"),
-    ROLE_USER("ROL_USER");
+    ROLE_USER("ROL_USER"),
+    ROLE_PATIENT("ROL_PATIENT");
 
     private String roleName;
 

@@ -3,6 +3,7 @@ package com.dh.apiClinic.service.impl;
 import com.dh.apiClinic.DTO.MedicDTO;
 import com.dh.apiClinic.DTO.PageDTO;
 import com.dh.apiClinic.entity.Medic;
+import com.dh.apiClinic.entity.Patient;
 import com.dh.apiClinic.exception.ResourceNotFoundException;
 import com.dh.apiClinic.repository.IMedicRepository;
 import com.dh.apiClinic.service.IMedicService;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,6 +92,16 @@ public class MedicServiceImpl implements IMedicService {
                 .collect(Collectors.toList());
 
         return medicDTOs;
+    }
+
+    @Override
+    public Long findMedicIdByUserName(String userName) {
+        Medic medic = medicRepository.findByUserName(userName);
+        if (medic != null) {
+            return medic.getId();
+        } else {
+            throw new EntityNotFoundException("Medic not found with username: " + userName);
+        }
     }
 
     @Override

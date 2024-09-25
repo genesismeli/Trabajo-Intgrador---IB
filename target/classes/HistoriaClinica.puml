@@ -1,0 +1,269 @@
+@startuml
+
+class ClinicalRecord {
+    + id: Long
+    + date: Date
+    + notes: String
+    + reason: String
+    + anamnesis: String
+    + gptSearchQuery: String
+    + medicalCertificate: String
+    --
+    + patient: Patient
+    + medic: Medic
+    + medications: List<Medication>
+    + diagnoses: List<Diagnosis>
+    + physicalExams: List<PhysicalExam>
+    + personalHistorys: List<PersonalHistory>
+    + familyHistorys: List<FamilyHistory>
+
+}
+
+class Medic {
+    + id: Long
+    + name: String
+    + lastName: String
+    + registrationNumber: String
+    + speciality: Specialty
+    + email: String
+    + userName: String
+    + password: String
+    --
+    + rol: Rol
+}
+
+class CodeCie10 {
+    + id: Long
+    + code: String
+    + description: String
+}
+
+class Diagnosis {
+    + id: Long
+    --
+    + codeCie10: CodeCie10
+    + clinicalRecord: ClinicalRecord
+}
+
+class Medication {
+    + id: Long
+    + notes: String
+    --
+    + vademecum: Vademecum
+    + clinicalRecord: ClinicalRecord
+}
+
+class Patient {
+    + id: Long
+    + name: String
+    + lastName: String
+    + dni: String
+    + birthdate: Date
+    + gender: Gender
+    + adress: String
+    + phone: String
+    + email: String
+    + userName: String
+    + password: String
+    --
+    + rol: Rol
+}
+
+
+class PhysicalExam {
+    + id: Long
+    + heartRate: Integer
+    + oxygenSaturation: Double
+    + respiratoryRate: Integer
+    + systolicPressure: Double
+    + diastolicPressure: Double
+    + beatsPerMinute: Integer
+    + glucose: Double
+    --
+    + clinicalRecord: ClinicalRecord
+}
+
+class FamilyHistory {
+    + id: Long
+    + coronaryArteryDisease: Boolean
+    + myocardialInfarction: Boolean
+    + hypertension: Boolean
+    + asthma: Boolean
+    + copd: Boolean
+    + tuberculosis: Boolean
+    + diabetes: Boolean
+    + obesity: Boolean
+    + metabolicSyndrome: Boolean
+    + anemia: Boolean
+    + hemophilia: Boolean
+    + stroke: Boolean
+    + alzheimer: Boolean
+    + multipleSclerosis: Boolean
+    + hemochromatosis: Boolean
+    + cysticFibrosis: Boolean
+    + depression: Boolean
+    + schizophrenia: Boolean
+    + rheumatoidArthritis: Boolean
+    + lupus: Boolean
+    + celiacDisease: Boolean
+    + chronicKidneyDisease: Boolean
+    + diabeticNephropathy: Boolean
+    + breastCancer: Boolean
+    + colonCancer: Boolean
+    + lungCancer: Boolean
+    + inflammatoryBowelDisease: Boolean
+    + hypothyroidism: Boolean
+    + otherMedicalHistory: String
+    --
+    + clinicalRecord: ClinicalRecord
+}
+
+class PersonalHistory {
+    + id: Long
+    + diabetes: Boolean
+    + hypertension: Boolean
+    + coronaryArteryDisease: Boolean
+    + bronchialAsthma: Boolean
+    + bronchopulmonaryDisease: Boolean
+    + psychopathy: Boolean
+    + allergies: String
+    + tuberculosis: Boolean
+    + sexuallyTransmittedInfection: Boolean
+    + gout: Boolean
+    + endocrineDisorders: Boolean
+    + nephropathies: Boolean
+    + uropathies: Boolean
+    + hematopathies: Boolean
+    + ulcer: Boolean
+    + hepatitis: Boolean
+    + fever: Boolean
+    + otherMedicalHistory: String
+    + cancer: String
+    --
+    + clinicalRecord: ClinicalRecord
+}
+
+class Vademecum {
+    + id: Long
+    + laboratorio_titular: String
+    + numero_certificado: String
+    + nombre_generico: String
+    + concentracion: String
+    + forma_farmaceutica: String
+    + presentacion: String
+    + nombre_comercial: String
+}
+
+enum Gender {
+    FEMENINO
+    MASCULINO
+    NOESPECIFICAR
+}
+
+class Rol {
+    + id: Long
+    + nameRol: NameRol
+}
+
+enum NameRol {
+    ROLE_ADMIN
+    ROLE_USER
+    ROL_PATIENT
+}
+
+enum Speciality {
+    ALERGIA_E_INMUNOLOGIA_PEDIATRICA
+    ALERGIA_E_INMULOGIA
+    ANATOMIA_PATOLOGICA
+    ANESTESILOGIA
+    ANGIOLOGIA_GRAL_Y_HEMODINAMIA
+    CARDIOLOGIA
+    CARDIOLOGIA_INFANTIL
+    CIRUGIA_CARDIOVASCULAR_INFANTIL
+    CIRUGIA_CARDIOVASCULAR
+    CIRUGIA_DE_CABEZA_Y_CUELLO
+    CIRUGIA_DE_TORAX
+    CIRUGIA_GENERAL
+    CIRUGA_INFANTIL
+    CIRUGIA_PLASTICA
+    CIRUGIA_VASCULAR_PERIFERICA
+    CLINICA_MEDICA
+    COLOPROCTOLOGIA
+    DERMATOLOGIA_PEDIATRICA
+    DERMATOLOGIA
+    DIAGNOSTICO_POR_IMAGENES
+    ELECTRO_FISIOLOGIA_CARDIACA
+    EMERGENTOLOGIA
+    ENDOCRINOLOGIA
+    ENDOCRINOLOGIA_INFANTIL
+    FARMACOLOGIA_CLINICA
+    FISIATRA
+    GASTROENTEROLOGIA
+    GASTROENTEROLOGIA_INFANTIL
+    GENETICA_MEDICA
+    GERIATRIA
+    GINECOLOGIA
+    HEMATOLOGIA
+    HEMATO_ONCOLOGIA_PEDIATRICA
+    HEMOTERAPIA_E_INMUNOHEMATOLOGIA
+    HEMATOLOGIA_PEDIATRICA
+    HEPATOLOGIA
+    INFECTOLOGIA
+    INFECTOLOGIA_INFANTIL
+    MEDICINA_DEL_DEPORTE
+    MEDICINA_DEL_TRABAJO
+    MEDICINA_GRAL_MEDICINA_DE_FAMILIA
+    MEDICINA_LEGAL
+    MEDICINA_NUCLEAR
+    MEDICINA_PALIATIVA
+    NEFROLOGIA
+    NEFROLOGIA_INFANTIL
+    NEONATOLOGIA
+    NEUMONOLOGIA
+    NEUMONOLOGIA_INFANTIL
+    NEUROCIRUGIA
+    NEUROLOGIA
+    NEUROLOGIA_INFANTIL
+    NURICION
+    OBSTETRICIA
+    OFTALMOLOGIA
+    ONCOLOGIA
+    ORTOPEDIA_Y_TRAUTAMOLOGIA_INFANTIL
+    ORTOPEDIA_Y_TRAUMATOLOGIA
+    OTORRNOLARINGOLOGIA
+    PEDIATRIA
+    PSIQUIATRIA_IFANTO_JUVENIL
+    PSIQUIATRIA
+    RADIOTERAPIA
+    REUMATOLOGIA
+    REUMATOLOGIA_INFANTIL
+    TERAPIA_INTENSIVA
+    TERAPIA_INTENSIVA_INFANTIL
+    TOCOGINECOLOGIA
+    TOXICOLOGIA
+    UROLOGIA
+}
+
+ClinicalRecord --|{ Medic
+ClinicalRecord --|{ Patient
+ClinicalRecord --|{ Medication
+ClinicalRecord --|{ Diagnosis
+ClinicalRecord --|{ PhysicalExam
+ClinicalRecord --|{ PersonalHistory
+ClinicalRecord --|{ FamilyHistory
+
+Diagnosis --|{ CodeCie10
+
+Medication --|{ Vademecum
+
+Patient -- Gender
+
+Patient -- Rol
+
+Medic -- Rol
+
+Medic -- Speciality
+
+Rol -- NameRol
+
+@enduml

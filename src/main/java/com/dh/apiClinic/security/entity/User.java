@@ -25,6 +25,9 @@ public class User {
     private String email;
 
     private String password;
+
+    private Boolean changedPassword;
+
     @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinTable(name ="users_rol", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "rol_id"))
@@ -38,5 +41,8 @@ public class User {
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.changedPassword = false;
+
+
     }
 }

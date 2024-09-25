@@ -1,6 +1,7 @@
 package com.dh.apiClinic.service;
 
 import com.dh.apiClinic.DTO.ClinicalRecordDTO;
+import com.dh.apiClinic.DTO.MedicDTO;
 import com.dh.apiClinic.DTO.PageDTO;
 import com.dh.apiClinic.entity.ClinicalRecord;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +24,6 @@ public interface IClinicalRecordService {
     void updateClinicalRecord(ClinicalRecordDTO newClinicalRecordDTO);
 
     ClinicalRecordDTO convertEntityToDto(ClinicalRecord clinicalRecord);
+
+    MedicDTO findMedicByClinicalRecordId(Long id);
 }

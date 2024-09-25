@@ -13,7 +13,7 @@
   border-radius: 15px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   justify-content: space-between;
-  z-index: 2;
+  z-index: 1;
   overflow-y: auto;
   flex-direction: row;
   position: relative; /* Ajusta la posición relativa para posicionar el modal dentro de este contenedor */
@@ -79,7 +79,7 @@
   max-height: 80vh;
   overflow-y: auto; /* Permitir desplazamiento vertical dentro del modal */
   display: none;
-  z-index: 2;
+  z-index: 4000;
 }
 
 /* Estilos para el botón de cerrar en el modal */
@@ -124,6 +124,7 @@
 /* Asegura que el modal se muestre cuando isModalOpen es verdadero */
 .modal.active {
   display: block;
+   z-index: 4000;
 }
 
 .title {

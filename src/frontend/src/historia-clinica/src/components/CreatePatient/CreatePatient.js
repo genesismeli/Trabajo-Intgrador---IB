@@ -13,6 +13,9 @@ class CreatePatient extends Component {
       address: '',
       phone: '',
       email: '',
+      userName: '',
+      password: '',
+      user: 'PATIENT',
       validationErrors: {},
     };
   }
@@ -40,8 +43,8 @@ class CreatePatient extends Component {
           return;
     }
 
-    const { name, lastName, dni, birthdate, gender, address, phone, email } = this.state;
-    const patientData = { name, lastName, dni, birthdate, gender, adress: address, phone, email };
+    const { name, lastName, dni, birthdate, gender, address, phone, email, userName, password } = this.state;
+    const patientData = { name, lastName, dni, birthdate, gender, adress: address, phone, email, userName, password };
 
     fetch('http://localhost:8081/patient/add', {
       method: 'POST',
@@ -223,6 +226,28 @@ class CreatePatient extends Component {
             />
             {/* Muestra el mensaje de error debajo del campo si existe */}
             {validationErrors.email && <p style={{ color: '#1DBEB4' }} className="error-message">{validationErrors.email}</p>}
+          </div>
+          <div class="form-row">
+            <label htmlFor="userName">Usuario:</label>
+            <input
+               type="text"
+               id="userName"
+               name="userName"
+               value={this.state.userName}
+               onChange={this.handleInputChange}
+               required
+            />
+          </div>
+          <div class="form-row">
+            <label htmlFor="password">Contraseña:</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                value={this.state.password}
+                onChange={this.handleInputChange}
+                required
+            />
           </div>
           <button className="create-patient-button">Crear Paciente</button>
         </form>
